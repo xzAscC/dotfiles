@@ -1,0 +1,10 @@
+node_modules/
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# System/editor noise
+.DS_Store
+*.log
