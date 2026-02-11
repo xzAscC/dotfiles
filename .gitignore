@@ -1,0 +1,9 @@
+# OS junk
+.DS_Store
+
+# Local secrets
+**/.env
+**/.env.*
+
+# Package artifacts
+**/node_modules/
