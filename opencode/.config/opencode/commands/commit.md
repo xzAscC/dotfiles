@@ -1,25 +1,28 @@
 ---
 description: Stage and create a safe git commit
 ---
-You are running a strict git commit workflow.
+Run a strict commit workflow with auto-commit squashing.
 
 Goals:
 1. Review repo state.
 2. Stage only intended changes.
-3. Create one high-quality commit.
+3. Squash consecutive auto-commits at `HEAD` into one quality commit when present.
+4. Otherwise, create one quality commit from current changes.
 
 Rules:
-- Run `git status --short`, `git diff`, `git diff --staged`, and `git log -5 --oneline` first.
-- Do not stage or commit likely secrets (`.env`, `*.pem`, `*.key`, credentials files, tokens).
-- If no tracked or untracked changes are available to commit, stop and report that clearly.
-- If `$ARGUMENTS` is provided, use it as the commit message.
-- If `$ARGUMENTS` is empty, write a concise commit message (1-2 sentences) focused on why.
-- Prefer `git add <explicit files>`; only use `git add -A` if changes are clearly all intended.
-- Run the commit and show the final status.
-- If commit hooks fail, report the exact error and stop.
+- First run: `git status --short`, `git diff`, `git diff --staged`, `git log -5 --oneline`.
+- Auto-commits are subjects starting with `chore(opencode): auto-commit after assistant edits`.
+- If `HEAD` has consecutive auto-commits, find the base commit before the earliest one, inspect `git diff <base>..HEAD` (and subjects), then squash (for example `git reset --soft <base>` + new commit).
+- During squash and normal flow, exclude disallowed files from index only (for example `git restore --staged -- <file>`) so local files remain.
+- Disallowed files: secrets/sensitive env (`.env`, `.env.*`, `*.pem`, `*.key`, credentials/token files) and large model/checkpoint artifacts (`*.ckpt`, `*.pt`, `*.pth`, `*.safetensors`, `*.onnx`, very large binaries).
+- If disallowed files are local/generated artifacts, keep them untracked and add precise `.gitignore` patterns; never add broad risky rules or use `.gitignore` to hide already tracked files.
+- If no tracked/untracked changes exist, stop and report clearly.
+- Commit message: use `$ARGUMENTS` when provided; otherwise write 1-2 concise sentences focused on why.
+- Prefer `git add <explicit files>`; use `git add -A` only when clearly intended.
+- Run commit and show final status; if hooks fail, report exact error and stop.
 
-Expected output back to user:
+Return to user:
+- Whether auto-commits were detected/squashed and the squash range/base (if any).
 - What was staged.
-- Commit message used.
-- Commit hash.
-- Final `git status --short` summary.
+- Any `.gitignore` entries added (and why).
+- Commit message, commit hash, and final `git status --short`.

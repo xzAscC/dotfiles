@@ -7,3 +7,4 @@ This directory stores custom command definitions.
 - `commit.md`
 - `push.md`
 - `refactor-clean.md`
+- `write-test.md`

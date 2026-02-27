@@ -10,7 +10,10 @@ Policy:
 Steps:
 1. Detect current branch with `git rev-parse --abbrev-ref HEAD` and store as `<source-branch>`.
 2. Run `git status --short`.
-3. If working tree is dirty, stop and report that checkout/merge cannot proceed safely.
+3. If working tree is dirty, stash local changes before branch switching/merge:
+   - Run `git stash push -u -m "opencode:auto-push:<source-branch>"`.
+   - Record that a stash was created and include the stash label/reference in the report.
+   - If stashing fails, stop and report the exact error.
 4. Choose target branch:
    - Use `main` if it exists.
    - Otherwise use `master` if it exists.
@@ -26,7 +29,10 @@ Steps:
    - If upstream exists: `git push`
    - If upstream does not exist: `git push -u origin <target-branch>`
 9. If `<source-branch>` is not the target branch, checkout `<source-branch>`.
-10. Return: source branch, target branch, merge result, push result, whether switched back to source branch, and final `git status --short`.
+10. If a stash was created in step 3, restore it with `git stash pop` after branch operations complete:
+   - If restore succeeds, report success.
+   - If restore has conflicts, stop and report conflict files plus next steps (the stash entry may be kept by Git).
+11. Return: source branch, target branch, merge result, push result, whether switched back to source branch, stash create/restore result, and final `git status --short`.
 
 Safety rules:
 - Never use `--force` unless user explicitly requests it.

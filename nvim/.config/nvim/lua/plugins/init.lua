@@ -19,6 +19,16 @@ return {
   },
 
   {
+    "stevearc/aerial.nvim",
+    cmd = { "AerialOpen", "AerialToggle", "AerialNavToggle" },
+    opts = require "configs.aerial",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-tree/nvim-web-devicons",
+    },
+  },
+
+  {
     "tpope/vim-fugitive",
     cmd = { "Git", "G" },
   },
