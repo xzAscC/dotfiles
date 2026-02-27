@@ -6,6 +6,19 @@ local map = vim.keymap.set
 
 map("n", ";", ":", { desc = "CMD enter command mode" })
 map("i", "jk", "<ESC>")
+map("n", "<C-a>", "<cmd>AerialToggle!<CR>", { desc = "Toggle code outline" })
+map("n", "<leader>t]", "<cmd>NvimTreeResize +5<CR>", { desc = "Widen file tree" })
+map("n", "<leader>t[", "<cmd>NvimTreeResize -5<CR>", { desc = "Narrow file tree" })
+map("n", "<leader>tw", function()
+  local width = tonumber(vim.fn.input "NvimTree width: ")
+
+  if not width then
+    vim.notify("Invalid width", vim.log.levels.WARN)
+    return
+  end
+
+  vim.cmd("NvimTreeResize " .. width)
+end, { desc = "Set file tree width" })
 map("n", "<leader>p", function()
   local pdf = vim.fn.expand "%:p:r" .. ".pdf"
   local sysname = vim.uv.os_uname().sysname
