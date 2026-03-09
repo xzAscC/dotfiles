@@ -6,8 +6,11 @@ function opencode-model --description 'Switch between OpenCode model configurati
         echo "OpenCode Model Switcher"
         echo "======================"
         echo ""
-        if test -f $active_config
-            echo "Current config: "(basename (readlink -f $active_config 2>/dev/null; or echo $active_config))
+        if test -L $active_config
+            set current_link (readlink $active_config)
+            echo "Current config: "(string replace -r '.*oh-my-opencode\.(.+)\.json' '$1' $current_link)
+        else if test -f $active_config
+            echo "Current config: (not a symlink - use opencode-model to set)"
         end
         echo ""
         echo "Usage: opencode-model <model>"
@@ -37,6 +40,6 @@ function opencode-model --description 'Switch between OpenCode model configurati
         return 1
     end
     
-    cp $source_config $active_config
+    ln -sf $source_config $active_config
     echo "Switched to $argv[1] configuration"
 end
