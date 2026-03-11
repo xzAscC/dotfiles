@@ -2,35 +2,35 @@
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/dev/assets/oh-my-opencode.schema.json",
   "agents": {
     "sisyphus": {
-      "model": "zai-coding-plan/glm-5"
+      "model": "lmstudio/qwen/qwen3.5-9b"
     },
     "hephaestus": {
       "model": "openai/gpt-5.3-codex",
       "variant": "medium"
     },
     "oracle": {
-      "model": "zai-coding-plan/glm-5"
+      "model": "lmstudio/qwen/qwen3.5-9b"
     },
     "librarian": {
-      "model": "zai-coding-plan/glm-5"
+      "model": "lmstudio/qwen/qwen3.5-9b"
     },
     "explore": {
-      "model": "zai-coding-plan/glm-5"
+      "model": "lmstudio/qwen/qwen3.5-9b"
     },
     "multimodal-looker": {
       "model": "google/gemini-3-flash-preview"
     },
     "prometheus": {
-      "model": "zai-coding-plan/glm-5"
+      "model": "lmstudio/qwen/qwen3.5-9b"
     },
     "metis": {
-      "model": "zai-coding-plan/glm-5"
+      "model": "lmstudio/qwen/qwen3.5-9b"
     },
     "momus": {
-      "model": "zai-coding-plan/glm-5"
+      "model": "lmstudio/qwen/qwen3.5-9b"
     },
     "atlas": {
-      "model": "zai-coding-plan/glm-5"
+      "model": "lmstudio/qwen/qwen3.5-9b"
     }
   },
   "categories": {
@@ -38,22 +38,22 @@
       "model": "google/gemini-3-flash-preview"
     },
     "ultrabrain": {
-      "model": "zai-coding-plan/glm-5"
+      "model": "lmstudio/qwen/qwen3.5-9b"
     },
     "deep": {
-      "model": "zai-coding-plan/glm-5"
+      "model": "lmstudio/qwen/qwen3.5-9b"
     },
     "artistry": {
       "model": "google/gemini-3.1-pro-preview"
     },
     "quick": {
-      "model": "zai-coding-plan/glm-5"
+      "model": "lmstudio/qwen/qwen3.5-9b"
     },
     "unspecified-low": {
-      "model": "zai-coding-plan/glm-5"
+      "model": "lmstudio/qwen/qwen3.5-9b"
     },
     "unspecified-high": {
-      "model": "zai-coding-plan/glm-5"
+      "model": "lmstudio/qwen/qwen3.5-9b"
     },
     "writing": {
       "model": "openai/gpt-5.4"
