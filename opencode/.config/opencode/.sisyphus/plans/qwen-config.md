@@ -135,7 +135,7 @@ Critical Path: Task 1 → Tasks 2+3 (parallel) → F1+F2 (parallel)
 
 ## TODOs
 
-- [ ] 1. Create oh-my-opencode.qwen.json
+- [x] 1. Create oh-my-opencode.qwen.json
 
   **What to do**:
   - Copy the GLM config from `/home/xzascc/dotfiles/opencode/.config/opencode/oh-my-opencode.glm.json`
@@ -253,7 +253,7 @@ Critical Path: Task 1 → Tasks 2+3 (parallel) → F1+F2 (parallel)
 
 ---
 
-- [ ] 2. Add ocode-qwen function to config.fish
+- [x] 2. Add ocode-qwen function to config.fish
 
   **What to do**:
   - Edit `/home/xzascc/dotfiles/fish/.config/fish/config.fish`
@@ -340,7 +340,7 @@ Critical Path: Task 1 → Tasks 2+3 (parallel) → F1+F2 (parallel)
 
 ---
 
-- [ ] 3. Update opencode-model.fish with qwen option
+- [x] 3. Update opencode-model.fish with qwen option
 
   **What to do**:
   - Edit `/home/xzascc/dotfiles/fish/.config/fish/functions/opencode-model.fish`
@@ -451,11 +451,11 @@ Critical Path: Task 1 → Tasks 2+3 (parallel) → F1+F2 (parallel)
 
 > 2 review agents run in PARALLEL. ALL must APPROVE. Rejection → fix → re-run.
 
-- [ ] F1. **Config Integrity Check** — `quick`
+- [x] F1. **Config Integrity Check** — `quick`
   Verify `oh-my-opencode.qwen.json` has valid JSON, correct model counts (13 qwen, 0 glm, 5 preserved), and correct `$schema`. Verify ALL existing configs are byte-identical to their pre-task state using sha256sum: `oh-my-opencode.glm.json`, `oh-my-opencode.gpt.json`, `oh-my-opencode.opus.json`, `opencode.json`. Verify LMStudio connectivity: `curl -s http://localhost:1234/v1/models | jq '.data[] | select(.id == "qwen/qwen3.5-9b") | .id'` → `"qwen/qwen3.5-9b"`.
   Output: `JSON [VALID/INVALID] | Qwen refs [13/N] | GLM refs [0/N] | Preserved [5/N] | Existing configs [INTACT/MODIFIED] | LMStudio [UP/DOWN] | VERDICT: APPROVE/REJECT`
 
-- [ ] F2. **Shell Script Validation** — `quick`
+- [x] F2. **Shell Script Validation** — `quick`
   Run `fish -n` on both modified fish files. Verify `ocode-qwen` function exists in config.fish. Verify `case qwen` exists in opencode-model.fish. Verify help text and error message include `qwen`. Verify existing functions/cases are unchanged (grep counts for glm, gpt, opus = 1 each).
   Output: `config.fish syntax [PASS/FAIL] | opencode-model.fish syntax [PASS/FAIL] | ocode-qwen [EXISTS/MISSING] | case qwen [EXISTS/MISSING] | Existing functions [INTACT/MODIFIED] | VERDICT: APPROVE/REJECT`
 
