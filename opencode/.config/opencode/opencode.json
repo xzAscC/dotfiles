@@ -172,6 +172,13 @@
             "context": 131072,
             "output": 8192
           }
+        },
+        "qwen/qwen3.5-9b": {
+          "name": "Qwen3.5 9B (local)",
+          "limit": {
+            "context": 32768,
+            "output": 8192
+          }
         }
       }
     }
