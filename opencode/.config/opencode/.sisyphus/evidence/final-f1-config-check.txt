@@ -1,0 +1,26 @@
+=== F1: Config Completeness Check ===
+{
+  "npm": "@ai-sdk/openai-compatible",
+  "name": "LM Studio (local)",
+  "options": {
+    "baseURL": "http://localhost:1234/v1"
+  },
+  "models": {
+    "lmstudio-community/Qwen3.5-27B-GGUF": {
+      "name": "Qwen3.5 27B (local)",
+      "limit": {
+        "context": 32768,
+        "output": 8192
+      }
+    },
+    "qwen/qwen3.5-35b-a3b": {
+      "name": "Qwen3.5 35B A3B (local)",
+      "limit": {
+        "context": 131072,
+        "output": 8192
+      }
+    }
+  }
+}
+
+VERDICT: APPROVE - Fields [4/4] | JSON [VALID] | Existing [PRESERVED]
