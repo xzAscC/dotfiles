@@ -1,0 +1,62 @@
+{
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/dev/assets/oh-my-opencode.schema.json",
+  "agents": {
+    "sisyphus": {
+      "model": "glm-5"
+    },
+    "hephaestus": {
+      "model": "openai/gpt-5.3-codex",
+      "variant": "medium"
+    },
+    "oracle": {
+      "model": "zhipu/glm-5"
+    },
+    "librarian": {
+      "model": "zhipu/glm-5"
+    },
+    "explore": {
+      "model": "zhipu/glm-5"
+    },
+    "multimodal-looker": {
+      "model": "google/gemini-3-flash-preview"
+    },
+    "prometheus": {
+      "model": "zhipu/glm-5"
+    },
+    "metis": {
+      "model": "zhipu/glm-5"
+    },
+    "momus": {
+      "model": "zhipu/glm-5"
+    },
+    "atlas": {
+      "model": "zhipu/glm-5"
+    }
+  },
+  "categories": {
+    "visual-engineering": {
+      "model": "zhipu/glm-5"
+    },
+    "ultrabrain": {
+      "model": "zhipu/glm-5"
+    },
+    "deep": {
+      "model": "zhipu/glm-5"
+    },
+    "artistry": {
+      "model": "zhipu/glm-5"
+    },
+    "quick": {
+      "model": "zhipu/glm-5"
+    },
+    "unspecified-low": {
+      "model": "zhipu/glm-5"
+    },
+    "unspecified-high": {
+      "model": "zhipu/glm-5"
+    },
+    "writing": {
+      "model": "zhipu/glm-5"
+    }
+  }
+}

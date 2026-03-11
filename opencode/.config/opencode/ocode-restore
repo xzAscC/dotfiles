@@ -1,0 +1,14 @@
+#!/bin/bash
+# ocode-restore - Restore original oh-my-opencode.json config
+
+CONFIG_DIR="$(dirname "$(readlink -f "$0")")"
+OH_MY_CONFIG="$CONFIG_DIR/oh-my-opencode.json"
+BACKUP_CONFIG="$CONFIG_DIR/oh-my-opencode.json.bak"
+
+if [ -f "$BACKUP_CONFIG" ]; then
+    cp "$BACKUP_CONFIG" "$OH_MY_CONFIG"
+    echo "Restored original configuration"
+else
+    echo "No backup found at $BACKUP_CONFIG"
+    exit 1
+fi
