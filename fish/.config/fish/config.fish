@@ -55,6 +55,13 @@ if status is-interactive # Commands to run in interactive sessions can go here
         echo "✓ Switched to GPT mode"
         opencode $argv
     end
+
+    # Switch to Qwen mode (all glm-5 → qwen3.5-9b via LMStudio)
+    function ocode-qwen
+        cp ~/.config/opencode/oh-my-opencode.qwen.json ~/.config/opencode/oh-my-opencode.json
+        echo "✓ Switched to Qwen mode"
+        opencode $argv
+    end
     alias ls 'eza --icons'
     alias clear "printf '\033[2J\033[3J\033[1;1H'"
     alias q 'qs -c ii'
