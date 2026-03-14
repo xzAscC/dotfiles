@@ -1,10 +1,9 @@
 {
-  "active_plan": "/home/xzascc/dotfiles/opencode/.config/opencode/.sisyphus/plans/lmstudio-setup.md",
-  "started_at": "2026-03-11T05:52:14.907Z",
+  "active_plan": "/home/xzascc/dotfiles/opencode/.config/opencode/.sisyphus/plans/fix-ocode-symlink-cp.md",
+  "started_at": "2026-03-14T22:11:48.771Z",
   "session_ids": [
-    "ses_3249755ebffem8XP62dN0XnLHa",
-    "ses_32465cf27ffeyASRxQpK9RZ2z5"
+    "ses_3119b0f7bffeWryOXAuuPGPRDU"
   ],
-  "plan_name": "lmstudio-setup",
+  "plan_name": "fix-ocode-symlink-cp",
   "worktree_path": "/home/xzascc/dotfiles"
 }
