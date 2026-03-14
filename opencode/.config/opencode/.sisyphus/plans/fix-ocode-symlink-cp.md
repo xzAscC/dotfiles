@@ -44,7 +44,7 @@ Eliminate the "are the same file" cp error in all four ocode-* functions.
 
 ## TODOs
 
-- [ ] 1. Add `rm -f` before each `cp` in config.fish
+- [x] 1. Add `rm -f` before each `cp` in config.fish
 
   **What to do**:
   In `/home/xzascc/dotfiles/fish/.config/fish/config.fish`, add one line before EACH of the four `cp` commands inside the `ocode-*` functions:
@@ -102,6 +102,6 @@ Eliminate the "are the same file" cp error in all four ocode-* functions.
 
 ## Success Criteria
 
-- [ ] All four ocode-* commands work when oh-my-opencode.json is a symlink
-- [ ] All four ocode-* commands work when oh-my-opencode.json is a regular file
-- [ ] Switching between any two modes in any order produces no errors
+- [x] All four ocode-* commands work when oh-my-opencode.json is a symlink
+- [x] All four ocode-* commands work when oh-my-opencode.json is a regular file
+- [x] Switching between any two modes in any order produces no errors
