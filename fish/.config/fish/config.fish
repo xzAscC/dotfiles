@@ -37,6 +37,7 @@ if status is-interactive # Commands to run in interactive sessions can go here
 
     # Switch to GLM mode (all claude → glm-5)
     function ocode-glm
+        rm -f ~/.config/opencode/oh-my-opencode.json
         cp ~/.config/opencode/oh-my-opencode.glm.json ~/.config/opencode/oh-my-opencode.json
         echo "✓ Switched to GLM mode"
         opencode $argv
@@ -44,6 +45,7 @@ if status is-interactive # Commands to run in interactive sessions can go here
 
     # Switch to Opus mode (all glm-5 → claude-opus-4-6)
     function ocode-opus
+        rm -f ~/.config/opencode/oh-my-opencode.json
         cp ~/.config/opencode/oh-my-opencode.opus.json ~/.config/opencode/oh-my-opencode.json
         echo "✓ Switched to Opus mode"
         opencode $argv
@@ -51,8 +53,17 @@ if status is-interactive # Commands to run in interactive sessions can go here
 
     # Switch to GPT mode (all glm-5 → gpt-5.4)
     function ocode-gpt
+        rm -f ~/.config/opencode/oh-my-opencode.json
         cp ~/.config/opencode/oh-my-opencode.gpt.json ~/.config/opencode/oh-my-opencode.json
         echo "✓ Switched to GPT mode"
+        opencode $argv
+    end
+
+    # Switch to Qwen mode (all glm-5 → qwen3.5-9b via LMStudio)
+    function ocode-qwen
+        rm -f ~/.config/opencode/oh-my-opencode.json
+        cp ~/.config/opencode/oh-my-opencode.qwen.json ~/.config/opencode/oh-my-opencode.json
+        echo "✓ Switched to Qwen mode"
         opencode $argv
     end
     alias ls 'eza --icons'

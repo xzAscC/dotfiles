@@ -16,6 +16,18 @@
     }
   },
   "provider": {
+    "lmstudio": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "LM Studio (local)",
+      "options": {
+        "baseURL": "http://localhost:1234/v1"
+      },
+      "models": {
+        "qwen/qwen3.5-9b": {
+          "name": "qwen3.5-9b"
+        }
+      }
+    },
     "google": {
       "name": "Google",
       "models": {
