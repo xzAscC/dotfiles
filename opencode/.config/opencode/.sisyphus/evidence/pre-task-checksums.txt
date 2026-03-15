@@ -1,0 +1,4 @@
+3c326f79e8e2e2231d8d2d973eafc37d9f3f08a82b74af5fb23749f872f8eaa1  /home/xzascc/dotfiles/opencode/.config/opencode/oh-my-opencode.glm.json
+f246a85959a5dc757c84187843b0839811dfe831b11419f7d9ea58325c28b9e1  /home/xzascc/dotfiles/opencode/.config/opencode/oh-my-opencode.gpt.json
+3c326f79e8e2e2231d8d2d973eafc37d9f3f08a82b74af5fb23749f872f8eaa1  /home/xzascc/dotfiles/opencode/.config/opencode/oh-my-opencode.opus.json
+aee26ac41cc0e1199efe11ba4950c224d2a6d63cc779be36f6d8fc4214291e2d  /home/xzascc/dotfiles/opencode/.config/opencode/opencode.json

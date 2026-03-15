@@ -19,6 +19,7 @@ function opencode-model --description 'Switch between OpenCode model configurati
         echo "  glm  - Use GLM configuration"
         echo "  gpt  - Use GPT configuration"
         echo "  opus - Use Opus configuration"
+        echo "  qwen - Use Qwen configuration (LMStudio local)"
         return 0
     end
     
@@ -29,9 +30,11 @@ function opencode-model --description 'Switch between OpenCode model configurati
             set source_config $config_dir/oh-my-opencode.gpt.json
         case opus
             set source_config $config_dir/oh-my-opencode.opus.json
+        case qwen
+            set source_config $config_dir/oh-my-opencode.qwen.json
         case '*'
             echo "Error: Unknown model '$argv[1]'"
-            echo "Available models: glm, gpt, opus"
+            echo "Available models: glm, gpt, opus, qwen"
             return 1
     end
     
