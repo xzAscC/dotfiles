@@ -47,6 +47,12 @@ map("n", "<leader>p", function()
   end
 end, { desc = "Open compiled PDF" })
 
+map("n", "<leader>gd", "<cmd>DiffviewOpen<CR>", { desc = "Open diff view" })
+map("n", "<leader>gD", "<cmd>DiffviewOpen main...HEAD<CR>", { desc = "Diff vs main branch" })
+map("n", "<leader>gc", "<cmd>DiffviewClose<CR>", { desc = "Close diff view" })
+map("n", "<leader>gh", "<cmd>DiffviewFileHistory %<CR>", { desc = "File history" })
+map("n", "<leader>mp", "<cmd>RenderMarkdown toggle<CR>", { desc = "Toggle Markdown render" })
+
 vim.api.nvim_create_autocmd("LspAttach", {
   group = vim.api.nvim_create_augroup("UserLspKeymaps", { clear = true }),
   callback = function(args)
