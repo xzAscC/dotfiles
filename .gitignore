@@ -7,3 +7,10 @@
 
 # Package artifacts
 **/node_modules/
+
+# Oh My OpenAgent / OpenCode runtime state
+**/.omo/
+
+# Local backup files
+**/*.bak
+**/*.bak.*
