@@ -1,3 +1,4 @@
+local vim = rawget(_G, "vim")
 local nvlsp = require "nvchad.configs.lspconfig"
 
 nvlsp.defaults()
@@ -8,6 +9,8 @@ local function get_python_path(workspace)
   if vim.env.VIRTUAL_ENV then
     return vim.env.VIRTUAL_ENV .. "/bin/python"
   end
+
+  workspace = workspace or vim.uv.cwd()
 
   -- 2. Check for .venv or venv in project root
   local candidates = {
@@ -46,3 +49,34 @@ vim.lsp.config("pyright", {
 })
 
 vim.lsp.enable "pyright"
+
+vim.lsp.config("texlab", {
+  on_attach = nvlsp.on_attach,
+  on_init = nvlsp.on_init,
+  capabilities = nvlsp.capabilities,
+  settings = {
+    texlab = {
+      build = {
+        onSave = false, -- let vimtex handle compilation
+      },
+      forwardSearch = {
+        executable = "zathura",
+        args = { "--synctex-forward", "%l:%f:%p" },
+      },
+      chktex = {
+        onOpenAndSave = true,
+      },
+    },
+  },
+})
+
+vim.lsp.enable "texlab"
+
+vim.lsp.config("bashls", {
+  on_attach = nvlsp.on_attach,
+  on_init = nvlsp.on_init,
+  capabilities = nvlsp.capabilities,
+  filetypes = { "sh", "bash" },
+})
+
+vim.lsp.enable "bashls"
