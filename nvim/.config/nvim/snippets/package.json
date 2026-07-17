@@ -1,0 +1,11 @@
+{
+  "name": "local-nvim-snippets",
+  "contributes": {
+    "snippets": [
+      {
+        "language": ["tex", "plaintex"],
+        "path": "./latex.json"
+      }
+    ]
+  }
+}
