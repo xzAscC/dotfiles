@@ -1,0 +1,156 @@
+{
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/dev/assets/oh-my-opencode.schema.json",
+  "agents": {
+    "sisyphus": {
+      "model": "zai-coding-plan/glm-5.2",
+      "variant": "medium",
+      "fallback_models": [
+        {
+          "model": "zai-coding-plan/glm-5.1"
+        }
+      ]
+    },
+    "hephaestus": {
+      "model": "openai/gpt-5.6-sol",
+      "variant": "medium"
+    },
+    "oracle": {
+      "model": "zai-coding-plan/glm-5.2",
+      "variant": "high",
+      "fallback_models": [
+        {
+          "model": "openai/gpt-5.6-sol",
+          "variant": "high"
+        }
+      ]
+    },
+    "librarian": {
+      "model": "zai-coding-plan/glm-5.2",
+      "fallback_models": [
+        {
+          "model": "openai/gpt-5.4-nano"
+        }
+      ]
+    },
+    "explore": {
+      "model": "zai-coding-plan/glm-5.2",
+      "fallback_models": [
+        {
+          "model": "openai/gpt-5.4-nano"
+        }
+      ]
+    },
+    "multimodal-looker": {
+      "model": "openai/gpt-5.6-sol",
+      "variant": "medium",
+      "fallback_models": [
+        {
+          "model": "zai-coding-plan/glm-4.6v"
+        },
+        {
+          "model": "openai/gpt-5-nano"
+        }
+      ]
+    },
+    "prometheus": {
+      "model": "zai-coding-plan/glm-5.2",
+      "variant": "high",
+      "fallback_models": [
+        {
+          "model": "google/gemini-3.1-pro-preview"
+        }
+      ]
+    },
+    "metis": {
+      "model": "zai-coding-plan/glm-5.2",
+      "variant": "high"
+    },
+    "momus": {
+      "model": "zai-coding-plan/glm-5.2",
+      "variant": "xhigh",
+      "fallback_models": [
+        {
+          "model": "google/gemini-3.1-pro-preview",
+          "variant": "high"
+        }
+      ]
+    },
+    "atlas": {
+      "model": "zai-coding-plan/glm-5.2",
+      "variant": "medium"
+    },
+    "sisyphus-junior": {
+      "model": "openai/gpt-5.6-sol",
+      "variant": "medium"
+    }
+  },
+  "categories": {
+    "visual-engineering": {
+      "model": "openai/gpt-5.6-sol",
+      "variant": "high",
+      "fallback_models": [
+        {
+          "model": "zai-coding-plan/glm-5.1"
+        }
+      ]
+    },
+    "ultrabrain": {
+      "model": "zai-coding-plan/glm-5.2",
+      "variant": "xhigh",
+      "fallback_models": [
+        {
+          "model": "google/gemini-3.1-pro-preview",
+          "variant": "high"
+        }
+      ]
+    },
+    "deep": {
+      "model": "zai-coding-plan/glm-5.2",
+      "variant": "medium",
+      "fallback_models": [
+        {
+          "model": "google/gemini-3.1-pro-preview",
+          "variant": "high"
+        }
+      ]
+    },
+    "artistry": {
+      "model": "openai/gpt-5.6-sol",
+      "variant": "high",
+      "fallback_models": [
+        {
+          "model": "openai/gpt-5.6-sol"
+        }
+      ]
+    },
+    "quick": {
+      "model": "zai-coding-plan/glm-5.2",
+      "fallback_models": [
+        {
+          "model": "google/gemini-3-flash-preview"
+        }
+      ]
+    },
+    "unspecified-low": {
+      "model": "zai-coding-plan/glm-5.2",
+      "variant": "medium",
+      "fallback_models": [
+        {
+          "model": "google/gemini-3-flash-preview"
+        }
+      ]
+    },
+    "unspecified-high": {
+      "model": "zai-coding-plan/glm-5.2",
+      "variant": "medium",
+      "fallback_models": [
+        {
+          "model": "google/gemini-3-flash-preview"
+        }
+      ]
+    },
+    "writing": {
+      "model": "openai/gpt-5.6-sol"
+    }
+  }
+}
