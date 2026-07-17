@@ -1,5 +1,22 @@
+---@diagnostic disable: undefined-global
 vim.g.base46_cache = vim.fn.stdpath "data" .. "/base46/"
 vim.g.mapleader = " "
+vim.g.vscode_snippets_exclude = { "tex", "plaintex" }
+vim.g.vscode_snippets_path = vim.fn.stdpath "config" .. "/snippets"
+
+vim.api.nvim_create_user_command("ClearMarks", function()
+  vim.cmd "delmarks!"
+  pcall(function()
+    vim.cmd "delmarks A-Z0-9"
+  end)
+  vim.cmd "wshada!"
+  vim.notify "Cleared local, global, and ShaDa marks"
+end, { desc = "Clear local/global marks and persist ShaDa" })
+
+local fish = vim.fn.exepath "fish"
+if fish ~= "" then
+  vim.o.shell = fish
+end
 
 -- bootstrap lazy and all plugins
 local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
