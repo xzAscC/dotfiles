@@ -1,0 +1,19 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": [
+    "opencode-wakatime",
+    "oh-my-openagent@latest"
+  ],
+  "lsp": {
+    "texlab": {
+      "command": ["texlab"],
+      "extensions": [".tex", ".sty", ".cls", ".bib"]
+    }
+  },
+  "formatter": {
+    "latexindent": {
+      "command": ["latexindent", "$FILE"],
+      "extensions": [".tex", ".sty", ".cls"]
+    }
+  }
+}
