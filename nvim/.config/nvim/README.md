@@ -29,6 +29,7 @@ nvim --headless "+Lazy! sync" +qa
 - `stylua` (for Lua formatting)
 - `pyright` (for Python LSP)
 - `latexmk` and a PDF viewer (`skim` on macOS, `zathura` on Linux) for VimTeX
+- `bun` for browser-based GitHub Markdown preview
 - Optional shell integration: if `fish` exists, it is used as `:set shell`
 
 ## Structure
@@ -60,6 +61,8 @@ Declared in `lua/plugins/init.lua`:
 - `nvim-tree/nvim-tree.lua`
 - `tpope/vim-fugitive`
 - `lervag/vimtex`
+- `MeanderingProgrammer/render-markdown.nvim`
+- `wallpants/github-preview.nvim`
 
 Everything else comes from NvChad and the pinned `lazy-lock.json`.
 
@@ -68,9 +71,14 @@ Everything else comes from NvChad and the pinned `lazy-lock.json`.
 - `<Space>` is the leader key
 - `;` in normal mode enters command-line mode (`:`)
 - `jk` in insert mode exits to normal mode
+- `<Alt-h/j/k/l>` moves between Neovim windows, including terminal windows
 - `<C-n>` toggles NvimTree
 - `<leader>p` opens the compiled PDF for the current TeX buffer
+- `<leader>mp` toggles in-editor Markdown rendering
+- `<leader>mP` toggles browser-based GitHub-style Markdown preview
 - LSP buffer-local maps on attach: `gd`, `gr`, `gD`, `gi`, `K`
+- Python, shell, and Lua files support structural folding for functions, classes, loops, and
+  control blocks; use `zc`/`zo` to close/open a fold, or `zM`/`zR` to close/open all folds.
 
 ## Notes
 
