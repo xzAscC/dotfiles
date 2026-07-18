@@ -38,7 +38,7 @@ map("n", "<leader>gD", "<cmd>DiffviewOpen main...HEAD<CR>", { desc = "Diff vs ma
 map("n", "<leader>gc", "<cmd>DiffviewClose<CR>", { desc = "Close diff view" })
 map("n", "<leader>gh", "<cmd>DiffviewFileHistory %<CR>", { desc = "File history" })
 map("n", "<leader>mp", "<cmd>RenderMarkdown toggle<CR>", { desc = "Toggle Markdown render" })
-map("n", "<leader>mP", "<cmd>GithubPreviewToggle<CR>", { desc = "Toggle GitHub Markdown preview" })
+map("n", "<leader>mP", "<cmd>MarkdownPreviewToggle<CR>", { desc = "Toggle GitHub Markdown preview" })
 
 vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("UserLatexKeymaps", { clear = true }),

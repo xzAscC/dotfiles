@@ -29,7 +29,7 @@ nvim --headless "+Lazy! sync" +qa
 - `stylua` (for Lua formatting)
 - `pyright` (for Python LSP)
 - `latexmk` and a PDF viewer (`skim` on macOS, `zathura` on Linux) for VimTeX
-- `bun` for browser-based GitHub Markdown preview
+- `gh` CLI with `yusukebe/gh-markdown-preview` extension for browser-based GitHub Markdown preview
 - Optional shell integration: if `fish` exists, it is used as `:set shell`
 
 ## Structure
@@ -62,7 +62,7 @@ Declared in `lua/plugins/init.lua`:
 - `tpope/vim-fugitive`
 - `lervag/vimtex`
 - `MeanderingProgrammer/render-markdown.nvim`
-- `wallpants/github-preview.nvim`
+- `babarot/markdown-preview.nvim`
 
 Everything else comes from NvChad and the pinned `lazy-lock.json`.
 
