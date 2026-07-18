@@ -81,10 +81,10 @@ return {
   },
 
   {
-    "wallpants/github-preview.nvim",
+    "babarot/markdown-preview.nvim",
     ft = "markdown",
-    cmd = { "GithubPreviewStart", "GithubPreviewStop", "GithubPreviewToggle" },
-    opts = require "configs.github_preview",
+    cmd = { "MarkdownPreview", "MarkdownPreviewStop", "MarkdownPreviewToggle" },
+    opts = {},
   },
 
   {
