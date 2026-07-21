@@ -40,6 +40,53 @@ map("n", "<leader>gh", "<cmd>DiffviewFileHistory %<CR>", { desc = "File history"
 map("n", "<leader>mp", "<cmd>RenderMarkdown toggle<CR>", { desc = "Toggle Markdown render" })
 map("n", "<leader>mP", "<cmd>MarkdownPreviewToggle<CR>", { desc = "Toggle GitHub Markdown preview" })
 
+-- List all markdown tags in cwd as a telescope picker.
+-- Nested tags use '/' (e.g. #diary/daily). <CR> greps files containing the tag.
+map("n", "<leader>ft", function()
+  local actions = require("telescope.actions")
+  local action_state = require("telescope.actions.state")
+  local pickers = require("telescope.pickers")
+  local finders = require("telescope.finders")
+  local conf = require("telescope.config").values
+
+  local out = vim.fn.systemlist(
+    "rg -oN --no-filename -g '*.md' '#[A-Za-z][A-Za-z0-9_/-]*'"
+  )
+  if vim.v.shell_error ~= 0 then
+    vim.notify("No tags found (or rg failed).", vim.log.levels.WARN)
+    return
+  end
+
+  local counts = {}
+  for _, t in ipairs(out) do
+    counts[t] = (counts[t] or 0) + 1
+  end
+
+  local tags = {}
+  for t, n in pairs(counts) do
+    tags[#tags + 1] = string.format("%-30s %3d", t, n)
+  end
+  table.sort(tags)
+
+  pickers.new({}, {
+    prompt_title = "Tags (with counts)",
+    finder = finders.new_table({ results = tags }),
+    sorter = conf.generic_sorter({}),
+    attach_mappings = function(prompt_bufnr, _)
+      actions.select_default:replace(function()
+        local sel = action_state.get_selected_entry()
+        actions.close(prompt_bufnr)
+        if not sel then
+          return
+        end
+        local tag = sel[1]:match("^(%S+)")
+        vim.cmd("Telescope grep_string search=" .. vim.fn.fnameescape(tag))
+      end)
+      return true
+    end,
+  }):find()
+end, { desc = "List all markdown tags" })
+
 vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("UserLatexKeymaps", { clear = true }),
   pattern = { "tex", "plaintex", "latex" },
