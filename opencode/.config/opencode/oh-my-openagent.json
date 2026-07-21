@@ -2,11 +2,11 @@
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/dev/assets/oh-my-opencode.schema.json",
   "agents": {
     "sisyphus": {
-      "model": "xai/grok-4.5",
+      "model": "zai-coding-plan/glm-5.2",
       "variant": "medium",
       "fallback_models": [
         {
-          "model": "zai-coding-plan/glm-5.2"
+          "model": "zai-coding-plan/glm-5.1"
         }
       ]
     },
