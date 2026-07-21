@@ -69,3 +69,4 @@ vim.g.vimtex_compiler_latexmk = {
   options = { "-synctex=1" },
 }
 vim.g.vimtex_quickfix_mode = 0
+vim.o.exrc = true
