@@ -26,6 +26,7 @@ nvim --headless "+Lazy! sync" +qa
 
 - `nvim` 0.10+
 - `git`
+- Kitty 0.28+ and ImageMagick 7 with the `rsvg` delegate for in-editor image/SVG previews
 - `stylua` (for Lua formatting)
 - `pyright` (for Python LSP)
 - `latexmk` and a PDF viewer (`skim` on macOS, `zathura` on Linux) for VimTeX
@@ -63,6 +64,7 @@ Declared in `lua/plugins/init.lua`:
 - `lervag/vimtex`
 - `MeanderingProgrammer/render-markdown.nvim`
 - `babarot/markdown-preview.nvim`
+- `folke/snacks.nvim` (image and SVG rendering)
 
 Everything else comes from NvChad and the pinned `lazy-lock.json`.
 
