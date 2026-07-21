@@ -114,22 +114,40 @@ return {
   },
 
   {
-    "3rd/image.nvim",
-    event = {
-      "VeryLazy",
-      "BufReadPre *.png",
-      "BufReadPre *.jpg",
-      "BufReadPre *.jpeg",
-      "BufReadPre *.gif",
-      "BufReadPre *.webp",
-      "BufReadPre *.avif",
-      "BufReadPre *.pdf",
+    "folke/snacks.nvim",
+    priority = 1000,
+    lazy = false,
+    opts = {
+      image = {
+        enabled = true,
+        formats = {
+          "png",
+          "jpg",
+          "jpeg",
+          "gif",
+          "bmp",
+          "webp",
+          "tiff",
+          "heic",
+          "avif",
+          "mp4",
+          "mov",
+          "avi",
+          "mkv",
+          "webm",
+          "pdf",
+          "icns",
+          "svg",
+        },
+        doc = {
+          enabled = true,
+          inline = true,
+          float = true,
+          max_width = 80,
+          max_height = 40,
+        },
+      },
     },
-    config = function()
-      local image_config = require(table.concat({ "configs", "image" }, "."))
-
-      require("image").setup(image_config)
-    end,
   },
 
   {
