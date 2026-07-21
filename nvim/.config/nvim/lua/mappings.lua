@@ -45,6 +45,7 @@ map("n", "<leader>mP", "<cmd>MarkdownPreviewToggle<CR>", { desc = "Toggle GitHub
 map("n", "<leader>ft", function()
   local actions = require("telescope.actions")
   local action_state = require("telescope.actions.state")
+  local builtin = require("telescope.builtin")
   local pickers = require("telescope.pickers")
   local finders = require("telescope.finders")
   local conf = require("telescope.config").values
@@ -75,12 +76,14 @@ map("n", "<leader>ft", function()
     attach_mappings = function(prompt_bufnr, _)
       actions.select_default:replace(function()
         local sel = action_state.get_selected_entry()
+        local tag = sel and sel[1]:match("^(%S+)")
         actions.close(prompt_bufnr)
-        if not sel then
+        if not tag then
           return
         end
-        local tag = sel[1]:match("^(%S+)")
-        vim.cmd("Telescope grep_string search=" .. vim.fn.fnameescape(tag))
+        vim.schedule(function()
+          builtin.grep_string({ search = tag, additional_args = { "--glob=*.md" } })
+        end)
       end)
       return true
     end,
