@@ -314,3 +314,22 @@ vim.api.nvim_create_autocmd("BufEnter", {
     end
   end,
 })
+
+-- 打开 epub 时直接 fork zathura 接管渲染，并清掉 nvim 里的二进制 buffer
+vim.api.nvim_create_autocmd("BufReadCmd", {
+  group = vim.api.nvim_create_augroup("UserEpubZathura", { clear = true }),
+  pattern = "*.epub",
+  callback = function(args)
+    if vim.fn.executable "zathura" ~= 1 then
+      vim.notify("zathura 未安装，无法打开 epub: " .. args.file, vim.log.levels.ERROR)
+      return
+    end
+
+    vim.system({ "zathura", "--fork", args.file }, { detach = true })
+    vim.schedule(function()
+      if vim.api.nvim_buf_is_valid(args.buf) then
+        vim.api.nvim_buf_delete(args.buf, { force = true })
+      end
+    end)
+  end,
+})
