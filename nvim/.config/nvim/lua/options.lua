@@ -11,15 +11,23 @@ vim.g.maplocalleader = "\\"
 
 vim.g.sh_fold_enabled = 7
 
+local function apply_fold_if_not_diff(apply)
+  local win = vim.api.nvim_get_current_win()
+  if vim.wo[win].diff then
+    return
+  end
+  apply(win)
+end
+
 vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("UserTreesitterFolds", { clear = true }),
   pattern = { "python", "lua" },
   callback = function()
-    local win = vim.api.nvim_get_current_win()
-
-    vim.wo[win].foldmethod = "expr"
-    vim.wo[win].foldexpr = "v:lua.vim.treesitter.foldexpr()"
-    vim.wo[win].foldlevel = 99
+    apply_fold_if_not_diff(function(win)
+      vim.wo[win].foldmethod = "expr"
+      vim.wo[win].foldexpr = "v:lua.vim.treesitter.foldexpr()"
+      vim.wo[win].foldlevel = 99
+    end)
   end,
 })
 
@@ -27,10 +35,10 @@ vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("UserShellFolds", { clear = true }),
   pattern = { "sh", "bash", "zsh" },
   callback = function()
-    local win = vim.api.nvim_get_current_win()
-
-    vim.wo[win].foldmethod = "syntax"
-    vim.wo[win].foldlevel = 99
+    apply_fold_if_not_diff(function(win)
+      vim.wo[win].foldmethod = "syntax"
+      vim.wo[win].foldlevel = 99
+    end)
   end,
 })
 
