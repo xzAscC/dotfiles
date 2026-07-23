@@ -8,6 +8,7 @@ local map = vim.keymap.set
 
 map("n", ";", ":", { desc = "CMD enter command mode" })
 map("i", "jk", "<ESC>")
+-- Window navigation (splits inside one tab). Alt does NOT switch tabs.
 map("n", "<A-h>", "<C-w>h", { desc = "Move to left window" })
 map("n", "<A-j>", "<C-w>j", { desc = "Move to lower window" })
 map("n", "<A-k>", "<C-w>k", { desc = "Move to upper window" })
@@ -16,6 +17,13 @@ map("t", "<A-h>", "<C-\\><C-n><C-w>h", { desc = "Move to left window" })
 map("t", "<A-j>", "<C-\\><C-n><C-w>j", { desc = "Move to lower window" })
 map("t", "<A-k>", "<C-\\><C-n><C-w>k", { desc = "Move to upper window" })
 map("t", "<A-l>", "<C-\\><C-n><C-w>l", { desc = "Move to right window" })
+
+-- Tab page navigation (built-in; e.g. normal edit tab <-> Diffview tab):
+--   gt    - next tab
+--   gT    - previous tab
+--   1gt   - go to tab 1
+--   2gt   - go to tab 2
+--   :tabn / :tabp / :tabn 2
 map("n", "<C-a>", "<cmd>AerialToggle!<CR>", { desc = "Toggle code outline" })
 -- NvimTree resizing
 map("n", "<leader>t]", "<cmd>NvimTreeResize +5<CR>", { desc = "Widen file tree" })
@@ -89,6 +97,50 @@ map("n", "<leader>ft", function()
     end,
   }):find()
 end, { desc = "List all markdown tags" })
+
+-- xattr tags/comment/rating: roundtrips with KDE Dolphin (user.xdg.* + Baloo).
+-- Works on any file type since xattr is filesystem-level.
+do
+  local x = function()
+    return require "utils.xattr"
+  end
+  map("n", "<leader>xt", function()
+    x().edit_tags()
+  end, { desc = "xattr: edit tags" })
+  map("n", "<leader>xc", function()
+    x().edit_comment()
+  end, { desc = "xattr: edit comment" })
+  map("n", "<leader>xr", function()
+    x().edit_rating()
+  end, { desc = "xattr: edit rating" })
+  map("n", "<leader>xs", function()
+    x().show()
+  end, { desc = "xattr: show info" })
+  map("n", "<leader>fx", function()
+    x().pick_tags()
+  end, { desc = "xattr: find by tag" })
+
+  local function cmd(name, fn)
+    vim.api.nvim_create_user_command(name, function(a)
+      fn(a.fargs[1] and vim.fn.expand(a.fargs[1]) or nil)
+    end, { nargs = "?", complete = "file" })
+  end
+  cmd("XattrTags", function(p)
+    x().edit_tags(p)
+  end)
+  cmd("XattrComment", function(p)
+    x().edit_comment(p)
+  end)
+  cmd("XattrRating", function(p)
+    x().edit_rating(p)
+  end)
+  cmd("XattrShow", function(p)
+    x().show(p)
+  end)
+  cmd("XattrFind", function()
+    x().pick_tags()
+  end)
+end
 
 vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("UserLatexKeymaps", { clear = true }),
