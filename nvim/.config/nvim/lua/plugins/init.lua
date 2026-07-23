@@ -52,6 +52,28 @@ return {
     cmd = { "DiffviewOpen", "DiffviewFileHistory", "DiffviewClose" },
     opts = {
       enhanced_diff_hl = false,
+      hooks = {
+        diff_buf_read = function()
+          vim.opt_local.wrap = false
+          vim.opt_local.list = false
+          vim.opt_local.scrollbind = true
+          vim.opt_local.cursorbind = true
+          pcall(function()
+            require("render-markdown").buf_disable()
+          end)
+        end,
+        diff_buf_win_enter = function()
+          vim.opt_local.wrap = false
+          vim.opt_local.scrollbind = true
+          vim.opt_local.cursorbind = true
+          pcall(function()
+            require("render-markdown").buf_disable()
+          end)
+        end,
+        view_enter = function()
+          vim.cmd "syncbind"
+        end,
+      },
     },
   },
 
