@@ -1,0 +1,115 @@
+# Copy into a target repo as: .github/workflows/xz-review.yml
+# Choose ONE auth block: machine-user PAT  OR  GitHub App.
+#
+# Secrets (repo or org):
+#   PAT path:  XZ_REVIEW_BOT_PAT
+#   App path:  XZ_REVIEW_APP_ID, XZ_REVIEW_APP_PRIVATE_KEY
+#
+# This example posts a placeholder-style review skeleton via gh.
+# Wire your real reviewer (OpenCode headless / script) where noted.
+
+name: xz-review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    concurrency:
+      group: xz-review-${{ github.repository }}-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      # --- Auth option 1: machine user PAT ---
+      - name: Token from PAT
+        if: ${{ secrets.XZ_REVIEW_BOT_PAT != '' }}
+        run: echo "XZ_REVIEW_GITHUB_TOKEN=${{ secrets.XZ_REVIEW_BOT_PAT }}" >> "$GITHUB_ENV"
+
+      # --- Auth option 2: GitHub App (preferred for xz-review[bot]) ---
+      - name: Token from GitHub App
+        if: ${{ secrets.XZ_REVIEW_BOT_PAT == '' && secrets.XZ_REVIEW_APP_ID != '' }}
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.XZ_REVIEW_APP_ID }}
+          private-key: ${{ secrets.XZ_REVIEW_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+
+      - name: Export App token
+        if: ${{ steps.app-token.outputs.token != '' }}
+        run: echo "XZ_REVIEW_GITHUB_TOKEN=${{ steps.app-token.outputs.token }}" >> "$GITHUB_ENV"
+
+      - name: Guard — bot token present
+        run: |
+          if [ -z "${XZ_REVIEW_GITHUB_TOKEN:-}" ]; then
+            echo "Missing XZ_REVIEW_BOT_PAT or App secrets" >&2
+            exit 1
+          fi
+          BOT_LOGIN=$(GH_TOKEN="$XZ_REVIEW_GITHUB_TOKEN" gh api user --jq .login)
+          echo "Posting as: $BOT_LOGIN"
+          if [ "$BOT_LOGIN" = "${{ github.event.pull_request.user.login }}" ]; then
+            echo "Bot identity equals PR author; refusing self-review" >&2
+            exit 1
+          fi
+
+      - name: Fetch PR diff
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr diff ${{ github.event.pull_request.number }} \
+            --repo ${{ github.repository }} > /tmp/pr.diff
+          gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files \
+            --paginate > /tmp/pr-files.json
+
+      # Replace this step with your real analyzer (OpenCode CLI, script, etc.)
+      # It should write /tmp/review.json:
+      # {
+      #   "commit_id": "<head sha>",
+      #   "body": "markdown summary with score",
+      #   "event": "COMMENT",
+      #   "comments": [ { "path", "line", "side", "body", ... } ]
+      # }
+      - name: Build review payload (stub)
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+          payload = {
+              "commit_id": os.environ["HEAD_SHA"],
+              "event": "COMMENT",
+              "body": (
+                  "<!-- xz-review:summary:start -->\n"
+                  "<!-- xz-review:confidence-score:5/5 -->\n"
+                  "**0 issues found** across 0 files\n\n"
+                  "Confidence score: **5/5**\n\n"
+                  "_Stub workflow — replace with real xz-review analyzer._\n"
+                  "<!-- xz-review:summary:end -->\n"
+              ),
+              "comments": [],
+          }
+          open("/tmp/review.json", "w").write(json.dumps(payload))
+          PY
+
+      - name: Post review as bot
+        env:
+          GH_TOKEN: ${{ env.XZ_REVIEW_GITHUB_TOKEN }}
+        run: |
+          gh api \
+            --method POST \
+            repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/reviews \
+            --input /tmp/review.json
