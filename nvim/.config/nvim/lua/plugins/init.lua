@@ -182,4 +182,29 @@ return {
     },
     opts = require "configs.octo",
   },
+
+  {
+    "dautroc/nvim-flashcard",
+    cmd = "Flashcard",
+    keys = {
+      { "<leader>fl", "<cmd>Flashcard learn<cr>", desc = "Flashcard learn" },
+      { "<leader>fe", "<cmd>Flashcard edit<cr>", desc = "Flashcard edit" },
+      { "<leader>fc", "<cmd>Flashcard create<cr>", desc = "Flashcard create" },
+      { "<leader>fo", "<cmd>Flashcard overview<cr>", desc = "Flashcard overview" },
+    },
+    opts = {
+      decks_dir = vim.fn.expand "~/JD/20 Anki/20.01 LANG",
+      new_cards_per_day = 20,
+      picker = "snacks",
+      keymaps = {
+        reveal = "<Space>",
+        again = "1",
+        hard = "2",
+        good = "3",
+        easy = "4",
+        quit = "q",
+      },
+      window = { width = 0.5, height = 0.4, border = "rounded" },
+    },
+  },
 }
