@@ -287,6 +287,106 @@ function M.collect(root, opts)
   return parse_dump(out, opts)
 end
 
+local function abs_path(path)
+  return vim.fn.fnamemodify(path, ":p")
+end
+
+-- Regular files under root. Prefer fd/rg so .gitignore is honored; find is last resort.
+-- @param root string?
+-- @return string[] absolute paths
+function M.list_files(root)
+  root = root or M.config.default_root or vim.fn.getcwd()
+  root = abs_path(root):gsub("/+$", "")
+  if root == "" then
+    root = "/"
+  end
+
+  local paths = {}
+
+  if vim.fn.executable("fd") == 1 then
+    local out, ok = run_list({
+      "fd",
+      "--type",
+      "f",
+      "--absolute-path",
+      "--base-directory",
+      root,
+      ".",
+    })
+    if ok then
+      for _, p in ipairs(out) do
+        if p ~= "" then
+          paths[#paths + 1] = abs_path(p)
+        end
+      end
+      return paths
+    end
+  end
+
+  if vim.fn.executable("rg") == 1 then
+    local out, ok = run_list({ "rg", "--files", "--", root })
+    if ok then
+      for _, p in ipairs(out) do
+        if p ~= "" then
+          if p:sub(1, 1) == "/" then
+            paths[#paths + 1] = abs_path(p)
+          else
+            paths[#paths + 1] = abs_path(root .. "/" .. p)
+          end
+        end
+      end
+      return paths
+    end
+  end
+
+  local out, ok = run_list({
+    "find",
+    root,
+    "-type",
+    "f",
+    "-print",
+  })
+  if ok then
+    vim.notify(
+      "xattr: fd/rg unavailable; untagged scan ignores .gitignore",
+      vim.log.levels.WARN
+    )
+    for _, p in ipairs(out) do
+      if p ~= "" then
+        paths[#paths + 1] = abs_path(p)
+      end
+    end
+  else
+    vim.notify("xattr: failed to enumerate files under " .. root, vim.log.levels.WARN)
+  end
+  return paths
+end
+
+-- Paths with empty/missing user.xdg.tags (inventory via list_files / .gitignore).
+-- @param root string?
+-- @param data table? optional M.collect(root) result to reuse
+-- @return string[] sorted absolute paths
+function M.list_untagged(root, data)
+  root = root or M.config.default_root or vim.fn.getcwd()
+  data = data or M.collect(root)
+
+  local tagged = {}
+  for path, info in pairs(data.files) do
+    if info.tags and #info.tags > 0 then
+      tagged[abs_path(path)] = true
+    end
+  end
+
+  local untagged = {}
+  for _, p in ipairs(M.list_files(root)) do
+    if not tagged[p] then
+      untagged[#untagged + 1] = p
+    end
+  end
+  table.sort(untagged)
+  return untagged
+end
+
 -- --------------------------------------------------------------------------- --
 -- Display: floating window showing all xattr for current file                  --
 -- --------------------------------------------------------------------------- --
@@ -465,13 +565,116 @@ end
 -- Telescope pickers                                                            --
 -- --------------------------------------------------------------------------- --
 
--- Picker: list every tag found under root with file counts.
--- <CR>: drill down to a file picker scoped to that tag.
+-- Flatten nested "a/b/c" tags into indented rows. Parents aggregate unique
+-- descendant paths (plus any files tagged with the parent itself).
+-- @param tags table  { [tag] = { path, ... } } from M.collect
+-- @return table[]    rows: tag, label, depth, count, paths, untagged=false
+local function build_nested_tag_rows(tags)
+  local function new_node(name, full)
+    return { name = name, full = full, children = {}, own_paths = {} }
+  end
+
+  local roots = {}
+  for tag, paths in pairs(tags) do
+    local parts = vim.split(tag, "/", { plain = true, trimempty = true })
+    if #parts > 0 then
+      local map = roots
+      local full_parts = {}
+      local node
+      for i, seg in ipairs(parts) do
+        full_parts[#full_parts + 1] = seg
+        local full = table.concat(full_parts, "/")
+        if not map[seg] then
+          map[seg] = new_node(seg, full)
+        end
+        node = map[seg]
+        map = node.children
+        if i == #parts then
+          for _, p in ipairs(paths) do
+            node.own_paths[#node.own_paths + 1] = p
+          end
+        end
+      end
+    end
+  end
+
+  local function collect_unique(node)
+    local seen, list = {}, {}
+    local function add(p)
+      if p and p ~= "" and not seen[p] then
+        seen[p] = true
+        list[#list + 1] = p
+      end
+    end
+    for _, p in ipairs(node.own_paths) do
+      add(p)
+    end
+    for _, child in pairs(node.children) do
+      for _, p in ipairs(collect_unique(child)) do
+        add(p)
+      end
+    end
+    node.paths = list
+    node.count = #list
+    return list
+  end
+
+  for _, node in pairs(roots) do
+    collect_unique(node)
+  end
+
+  local function sorted_children(node)
+    local kids = {}
+    for _, c in pairs(node.children) do
+      kids[#kids + 1] = c
+    end
+    table.sort(kids, function(a, b)
+      if a.count ~= b.count then
+        return a.count > b.count
+      end
+      return a.name < b.name
+    end)
+    return kids
+  end
+
+  local rows = {}
+  local function flatten(node, depth)
+    rows[#rows + 1] = {
+      tag = node.full,
+      label = node.name,
+      depth = depth,
+      count = node.count,
+      paths = node.paths,
+      untagged = false,
+    }
+    for _, child in ipairs(sorted_children(node)) do
+      flatten(child, depth + 1)
+    end
+  end
+
+  local root_list = {}
+  for _, node in pairs(roots) do
+    root_list[#root_list + 1] = node
+  end
+  table.sort(root_list, function(a, b)
+    if a.count ~= b.count then
+      return a.count > b.count
+    end
+    return a.name < b.name
+  end)
+  for _, node in ipairs(root_list) do
+    flatten(node, 0)
+  end
+  return rows
+end
+
+-- Picker: nested tags with counts; "(untagged)" pinned first.
+-- <CR>: drill down to files for that tag / parent aggregate / untagged set.
 function M.pick_tags(opts)
   opts = opts or {}
   local root = opts.root or vim.fn.getcwd()
-  local ok, telescope = pcall(require, "telescope")
-  if not ok then
+  local ok_tel = pcall(require, "telescope")
+  if not ok_tel then
     vim.notify("xattr: telescope.nvim not installed", vim.log.levels.ERROR)
     return
   end
@@ -483,52 +686,50 @@ function M.pick_tags(opts)
 
   vim.notify("xattr: scanning " .. root .. " ...", vim.log.levels.INFO)
   local data = M.collect(root)
-  local tag_list = {}
-  for tag, paths in pairs(data.tags) do
-    tag_list[#tag_list + 1] = { tag = tag, count = #paths, paths = paths }
-  end
-  table.sort(tag_list, function(a, b)
-    if a.count ~= b.count then
-      return a.count > b.count
-    end
-    return a.tag < b.tag
-  end)
-  if #tag_list == 0 then
-    vim.notify("xattr: no tags found under " .. root, vim.log.levels.WARN)
-    return
-  end
+  local untagged_paths = M.list_untagged(root, data)
 
-  local display_lines = {}
-  for _, e in ipairs(tag_list) do
-    display_lines[#display_lines + 1] = string.format("%-32s %3d files", e.tag, e.count)
+  local tag_list = build_nested_tag_rows(data.tags)
+  table.insert(tag_list, 1, {
+    tag = "(untagged)",
+    label = "(untagged)",
+    depth = 0,
+    count = #untagged_paths,
+    paths = untagged_paths,
+    untagged = true,
+  })
+
+  if #tag_list == 1 and #untagged_paths == 0 then
+    vim.notify("xattr: no files found under " .. root, vim.log.levels.WARN)
+    return
   end
 
   pickers.new({}, {
     prompt_title = "xattr Tags (" .. root .. ")",
-    finder = finders.new_table({ results = display_lines }),
+    finder = finders.new_table({
+      results = tag_list,
+      entry_maker = function(e)
+        local left = string.rep("  ", e.depth or 0) .. (e.label or e.tag)
+        return {
+          value = e,
+          display = string.format("%-32s %3d files", left, e.count),
+          ordinal = (e.tag or "") .. " " .. tostring(e.count),
+          tag = e.tag,
+          paths = e.paths,
+          untagged = e.untagged,
+        }
+      end,
+    }),
     sorter = conf.generic_sorter({}),
     attach_mappings = function(prompt_bufnr, _)
       actions.select_default:replace(function()
         local sel = action_state.get_selected_entry()
         actions.close(prompt_bufnr)
-        if not sel then
+        if not sel or not sel.value then
           return
         end
-        local tag = sel[1]:match("^(%S+)")
-        if not tag then
-          return
-        end
-        -- Drill down to a file picker scoped to this tag.
-        local entry = nil
-        for _, e in ipairs(tag_list) do
-          if e.tag == tag then
-            entry = e
-            break
-          end
-        end
-        if entry then
-          M.pick_files({ paths = entry.paths, title = "tag: " .. tag })
-        end
+        local entry = sel.value
+        local title = entry.untagged and "untagged" or ("tag: " .. entry.tag)
+        M.pick_files({ paths = entry.paths, title = title })
       end)
       return true
     end,
@@ -570,7 +771,10 @@ function M.pick_files(opts)
   table.sort(file_paths)
 
   if #file_paths == 0 then
-    vim.notify("xattr: no tagged files found", vim.log.levels.WARN)
+    vim.notify(
+      opts.title and ("xattr: no files for " .. opts.title) or "xattr: no files found",
+      vim.log.levels.WARN
+    )
     return
   end
 
@@ -599,10 +803,12 @@ function M.pick_files(opts)
           display = r.display,
           ordinal = r.display,
           path = r.path,
+          filename = r.path,
         }
       end,
     }),
     sorter = conf.generic_sorter({}),
+    previewer = conf.file_previewer({}),
     attach_mappings = function(prompt_bufnr, map)
       actions.select_default:replace(function()
         local sel = action_state.get_selected_entry()
