@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+# Append a reading note from Zathura into a shared todo.md.
+#
+# Usage:
+#   zathura-todo <pdf-path> <page> [mode]
+#   mode: clip (default) | prompt | stamp
+#
+# Todo file (single shared inbox):
+#   ~/JD/20 Anki/20.01 LANG/todo.md
+
+set -euo pipefail
+
+FILE="${1:?pdf path required}"
+PAGE="${2:?page required}"
+MODE="${3:-clip}"
+
+TODO_DIR="${ZATHURA_TODO_DIR:-$HOME/JD/20 Anki/20.01 LANG}"
+TODO_FILE="${ZATHURA_TODO_FILE:-$TODO_DIR/todo.md}"
+
+BASE="$(basename -- "$FILE")"
+TS="$(date '+%Y-%m-%d %H:%M')"
+
+clip_get() {
+  if [ -n "${WAYLAND_DISPLAY:-}" ] && command -v wl-paste >/dev/null 2>&1; then
+    wl-paste -n 2>/dev/null || true
+  elif command -v xclip >/dev/null 2>&1; then
+    xclip -o -selection clipboard 2>/dev/null || true
+  elif command -v xsel >/dev/null 2>&1; then
+    xsel -ob 2>/dev/null || true
+  fi
+}
+
+notify() {
+  local msg="$1"
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send "zathura-todo" "$msg" 2>/dev/null || true
+  fi
+}
+
+NOTE=""
+KIND=""   # quote | note | mark  (shown in todo.md)
+BODY_STYLE="" # quote | plain | none
+
+case "$MODE" in
+  clip)
+    KIND="quote"
+    BODY_STYLE="quote"
+    NOTE="$(clip_get | sed -e 's/[[:space:]]\+$//' -e 's/^[[:space:]]\+//')"
+    if [ -z "$NOTE" ]; then
+      notify "Clipboard empty — select text first"
+      exit 1
+    fi
+    ;;
+  prompt)
+    KIND="note"
+    BODY_STYLE="plain"
+    if command -v rofi >/dev/null 2>&1; then
+      NOTE="$(printf '' | rofi -dmenu -p "idea p${PAGE}" 2>/dev/null || true)"
+    elif command -v zenity >/dev/null 2>&1; then
+      NOTE="$(zenity --entry --title="zathura-todo" --text="Idea (p${PAGE}):" 2>/dev/null || true)"
+    else
+      notify "Need rofi or zenity for prompt mode"
+      exit 1
+    fi
+    if [ -z "${NOTE// }" ]; then
+      exit 0
+    fi
+    ;;
+  stamp)
+    KIND="mark"
+    BODY_STYLE="none"
+    NOTE=""
+    ;;
+  *)
+    echo "unknown mode: $MODE (use clip|prompt|stamp)" >&2
+    exit 2
+    ;;
+esac
+
+mkdir -p -- "$TODO_DIR"
+
+if [ ! -f "$TODO_FILE" ]; then
+  {
+    echo "# Reading TODO"
+    echo
+    echo "Inbox from Zathura. Reorganize later."
+    echo
+    echo "Kinds: \`quote\` = selection (t) · \`note\` = typed idea (T) · \`mark\` = page bookmark (C-t)"
+    echo
+  } >"$TODO_FILE"
+fi
+
+{
+  # Header line always carries an explicit kind tag.
+  echo "- **${TS}** · \`${KIND}\` · \`${BASE}\` · p.${PAGE}"
+  case "$BODY_STYLE" in
+    quote)
+      # Paper excerpt → blockquote
+      while IFS= read -r line || [ -n "$line" ]; do
+        printf '  > %s\n' "$line"
+      done <<<"$NOTE"
+      ;;
+    plain)
+      # Your own idea → indented plain text (not a quote)
+      while IFS= read -r line || [ -n "$line" ]; do
+        printf '  %s\n' "$line"
+      done <<<"$NOTE"
+      ;;
+    none)
+      # Bookmark only — no body
+      ;;
+  esac
+  echo
+} >>"$TODO_FILE"
+
+notify "→ todo.md · [${KIND}] ${BASE} p.${PAGE}"
