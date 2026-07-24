@@ -27,6 +27,7 @@ nvim --headless "+Lazy! sync" +qa
 - `nvim` 0.10+
 - `git`
 - Kitty 0.28+ and ImageMagick 7 with the `rsvg` delegate for in-editor image/SVG previews
+- `mpv` (with Kitty video output) and optional `yt-dlp` for YouTube/stream URLs via `<leader>mv`
 - `stylua` (for Lua formatting)
 - `pyright` (for Python LSP)
 - `latexmk` and a PDF viewer (`skim` on macOS, `zathura` on Linux) for VimTeX
@@ -44,6 +45,9 @@ nvim --headless "+Lazy! sync" +qa
     ├── chadrc.lua           # NvChad UI/theme config (flouromachine)
     ├── mappings.lua         # Custom keymaps + LSP keymaps on attach
     ├── options.lua          # Editor options, shell/python provider, vimtex settings
+    ├── utils
+    │   ├── kitty_mpv.lua    # Kitty + mpv media playback helper
+    │   └── xattr.lua        # Dolphin-compatible xattr tags/comment/rating
     ├── configs
     │   ├── conform.lua      # Formatter setup (Lua -> stylua)
     │   ├── lazy.lua         # lazy.nvim behavior/performance options
@@ -78,6 +82,7 @@ Everything else comes from NvChad and the pinned `lazy-lock.json`.
 - `<leader>p` opens the compiled PDF for the current TeX buffer
 - `<leader>mp` toggles in-editor Markdown rendering
 - `<leader>mP` toggles browser-based GitHub-style Markdown preview
+- `<leader>mv` plays media under cursor/selection (or video buffer) with `mpv --vo=kitty` in a Kitty window; also `:KittyMpv [path|url]`
 - LSP buffer-local maps on attach: `gd`, `gr`, `gD`, `gi`, `K`
 - Python, shell, and Lua files support structural folding for functions, classes, loops, and
   control blocks; use `zc`/`zo` to close/open a fold, or `zM`/`zR` to close/open all folds.
@@ -87,3 +92,4 @@ Everything else comes from NvChad and the pinned `lazy-lock.json`.
 - Python host provider is enabled when `~/.local/share/nvim/venv/bin/python` exists.
 - `vimtex` compiler is set to `latexmk`; quickfix auto-open is disabled.
 - NvimTree closes automatically if it is the last remaining window.
+- `<leader>mv` launches an external Kitty window running mpv (not an in-buffer player). Quit with `q` in mpv.
