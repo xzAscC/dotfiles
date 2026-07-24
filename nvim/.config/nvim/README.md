@@ -83,6 +83,7 @@ Everything else comes from NvChad and the pinned `lazy-lock.json`.
 - `<leader>mp` toggles in-editor Markdown rendering
 - `<leader>mP` toggles browser-based GitHub-style Markdown preview
 - `<leader>mv` plays media under cursor/selection (or video buffer) with `mpv --vo=kitty` in a Kitty window; also `:KittyMpv [path|url]`
+- `<leader>oc` / `:OpenCode [dir]` opens `opencode` inside a tmux session in a float terminal (`-A` attaches if the session already exists); `<leader>oC` / `:OpenCodeSp` horizontal, `:OpenCodeVsp` vertical
 - LSP buffer-local maps on attach: `gd`, `gr`, `gD`, `gi`, `K`
 - Python, shell, and Lua files support structural folding for functions, classes, loops, and
   control blocks; use `zc`/`zo` to close/open a fold, or `zM`/`zR` to close/open all folds.
