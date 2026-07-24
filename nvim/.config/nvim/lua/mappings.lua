@@ -48,6 +48,18 @@ map("n", "<leader>gh", "<cmd>DiffviewFileHistory %<CR>", { desc = "File history"
 map("n", "<leader>mp", "<cmd>RenderMarkdown toggle<CR>", { desc = "Toggle Markdown render" })
 map("n", "<leader>mP", "<cmd>MarkdownPreviewToggle<CR>", { desc = "Toggle GitHub Markdown preview" })
 
+do
+  local function kitty_mpv()
+    return require "utils.kitty_mpv"
+  end
+  map({ "n", "x" }, "<leader>mv", function()
+    kitty_mpv().play()
+  end, { desc = "Play media with Kitty mpv" })
+  vim.api.nvim_create_user_command("KittyMpv", function(opts)
+    kitty_mpv().play(opts.args ~= "" and opts.args or nil)
+  end, { nargs = "?", complete = "file", desc = "Play path/URL with Kitty mpv" })
+end
+
 -- List all markdown tags in cwd as a telescope picker.
 -- Nested tags use '/' (e.g. #diary/daily). <CR> greps files containing the tag.
 map("n", "<leader>ft", function()
