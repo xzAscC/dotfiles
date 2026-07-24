@@ -60,6 +60,35 @@ do
   end, { nargs = "?", complete = "file", desc = "Play path/URL with Kitty mpv" })
 end
 
+do
+  local function opencode()
+    return require "utils.opencode"
+  end
+  local function open(pos, cwd)
+    opencode().open {
+      pos = pos,
+      cwd = cwd ~= "" and cwd or nil,
+    }
+  end
+
+  map("n", "<leader>oc", function()
+    open "float"
+  end, { desc = "OpenCode (tmux, float)" })
+  map("n", "<leader>oC", function()
+    open "sp"
+  end, { desc = "OpenCode (tmux, horizontal)" })
+
+  vim.api.nvim_create_user_command("OpenCode", function(opts)
+    open("float", opts.args)
+  end, { nargs = "?", complete = "dir", desc = "OpenCode in tmux (float term)" })
+  vim.api.nvim_create_user_command("OpenCodeSp", function(opts)
+    open("sp", opts.args)
+  end, { nargs = "?", complete = "dir", desc = "OpenCode in tmux (horizontal split)" })
+  vim.api.nvim_create_user_command("OpenCodeVsp", function(opts)
+    open("vsp", opts.args)
+  end, { nargs = "?", complete = "dir", desc = "OpenCode in tmux (vertical split)" })
+end
+
 -- List all markdown tags in cwd as a telescope picker.
 -- Nested tags use '/' (e.g. #diary/daily). <CR> greps files containing the tag.
 map("n", "<leader>ft", function()
