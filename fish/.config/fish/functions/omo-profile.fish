@@ -1,10 +1,10 @@
-function omo-profile --description 'Switch oh-my-openagent model profile (glm|grok)'
+function omo-profile --description 'Switch oh-my-openagent model profile (glm|grok|gpt)'
     set -l cfg_dir ~/.config/opencode
     set -l profiles_dir $cfg_dir/profiles
     set -l active $cfg_dir/oh-my-openagent.json
 
     if test (count $argv) -eq 0
-        echo "Usage: omo-profile <glm|grok|list|show>"
+        echo "Usage: omo-profile <glm|grok|gpt|list|show>"
         if test -f $active
             echo -n "Active sisyphus: "
             jq -r '.agents.sisyphus.model // "unknown"' $active 2>/dev/null
@@ -29,7 +29,7 @@ function omo-profile --description 'Switch oh-my-openagent model profile (glm|gr
                 return 1
             end
             jq '{sisyphus: .agents.sisyphus}' $active
-        case glm grok
+        case glm grok gpt
             set -l src $profiles_dir/$argv[1].json
             if not test -f $src
                 echo "Profile not found: $src" >&2
@@ -43,7 +43,7 @@ function omo-profile --description 'Switch oh-my-openagent model profile (glm|gr
             and echo "Restart/reopen OpenCode for it to take effect."
         case '*'
             echo "Unknown profile: $argv[1]" >&2
-            echo "Available: glm | grok | list | show" >&2
+            echo "Available: glm | grok | gpt | list | show" >&2
             return 1
     end
 end
