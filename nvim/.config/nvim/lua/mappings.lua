@@ -141,6 +141,10 @@ end, { desc = "List all markdown tags" })
 
 -- xattr tags/comment/rating: roundtrips with KDE Dolphin (user.xdg.* + Baloo).
 -- Works on any file type since xattr is filesystem-level.
+-- Full picker key table and untagged-inventory behavior: lua/utils/xattr.lua header.
+--
+-- <leader>xt/xc/xr/xs  edit/show current buffer
+-- <leader>fx           tag browser → <CR> files → <C-t>/t tag in-place (no close)
 do
   local x = function()
     return require "utils.xattr"
@@ -159,7 +163,7 @@ do
   end, { desc = "xattr: show info" })
   map("n", "<leader>fx", function()
     x().pick_tags()
-  end, { desc = "xattr: find by tag" })
+  end, { desc = "xattr: find by tag (untagged: <C-t>/t to tag)" })
 
   local function cmd(name, fn)
     vim.api.nvim_create_user_command(name, function(a)
