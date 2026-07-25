@@ -1,0 +1,15 @@
+set highlight-color "rgba(255,245,180,0.25)"
+set highlight-active-color "rgba(255,210,120,0.35)"
+set selection-notification true
+set selection-clipboard clipboard
+set synctex true
+set synctex-editor-command "nvim --server /tmp/nvimtex.sock --remote +%l %f"
+
+# Reading inbox → ~/JD/20 Anki/20.01 LANG/todo.md
+# Script lives in nvim config: ~/.config/nvim/scripts/zathura-todo
+# t     = append clipboard selection (select text first)
+# T     = prompt for a short note (rofi/zenity)
+# <C-t> = page bookmark only
+map t exec "/home/xzascc/.config/nvim/scripts/zathura-todo \"$FILE\" $PAGE clip"
+map T exec "/home/xzascc/.config/nvim/scripts/zathura-todo \"$FILE\" $PAGE prompt"
+map <C-t> exec "/home/xzascc/.config/nvim/scripts/zathura-todo \"$FILE\" $PAGE stamp"
