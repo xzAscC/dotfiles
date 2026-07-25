@@ -97,4 +97,6 @@ Everything else comes from NvChad and the pinned `lazy-lock.json`.
 - NvimTree closes automatically if it is the last remaining window.
 - `<leader>mv` launches an external Kitty window running mpv (not an in-buffer player). Quit with `q` in mpv.
 - Flashcard decks are Markdown under `~/JD/20 Anki/20.01 LANG` (`---` between cards, `?` between front/back). Scheduling state is sibling `*.state.json`.
-- Paper reading inbox: Zathura keys `t` / `T` / `<C-t>` run `scripts/zathura-todo` and append to `~/JD/20 Anki/20.01 LANG/todo.md` (shared file, not per-PDF).
+- Reading captures (Zathura → `scripts/zathura-todo`):
+  - `t` 划词 (selection) → `~/JD/20 Anki/20.01 LANG/todo.md`
+  - `T` comment / `<C-t>` bookmark → book folder `note.md` under `## Comments & Bookmarks` (created if missing)
