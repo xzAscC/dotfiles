@@ -12,6 +12,43 @@
 --
 -- Depends on: getfattr, setfattr (Arch package: attr).
 -- Telescope is required lazily only when a picker is invoked.
+--
+-- ---------------------------------------------------------------------------
+-- User workflow (keymaps live in mappings.lua)
+-- ---------------------------------------------------------------------------
+-- Buffer-local (current file):
+--   <leader>xt  edit tags          :XattrTags [path]
+--   <leader>xc  edit comment       :XattrComment [path]
+--   <leader>xr  edit rating 0-5    :XattrRating [path]
+--   <leader>xs  show float info    :XattrShow [path]
+--
+-- Browse / inventory (cwd tree):
+--   <leader>fx  or  :XattrFind
+--     1) Tag picker: nested tags + counts; "(untagged)" pinned first.
+--        <CR>  drill into files for that tag / untagged set.
+--     2) File picker (after drill-down): path + [tags] + stars, with preview.
+--        Title bar hints:  <C-t> tag  <A-c> comment  <A-r> rating
+--
+--        Key          Mode        Action
+--        ------------ ----------- ------------------------------------------
+--        <CR>         i/n         open file in current window
+--        <C-t>        i/n         edit tags (picker stays open)
+--        t            n           same as <C-t>
+--        <C-e>        i/n         same as <C-t> (legacy)
+--        <A-c>        i/n         edit comment (picker stays open)
+--        c            n           same as <A-c>
+--        <A-r>        i/n         edit rating (picker stays open)
+--        r            n           same as <A-r>
+--
+--        In-place edit behavior:
+--        - vim.ui.input stacks above Telescope; list is NOT closed.
+--        - After a successful write, the row refreshes (tags/comment/rating).
+--        - When title is "untagged" (or opts.drop_when_tagged = true), a file
+--          that gains one or more tags is removed from the list so you can
+--          walk the inventory without reopening <leader>fx.
+--        - When the list becomes empty, the picker closes.
+--        - Drill-down into a real tag only updates the row display; it does
+--          not remove the file from that tag's file list.
 
 local M = {}
 
@@ -473,7 +510,8 @@ end
 -- --------------------------------------------------------------------------- --
 
 -- Edit the tag list for a path. Prefilled with current tags as CSV.
-function M.edit_tags(path)
+-- Optional on_done(tags) runs after a successful write (not on cancel).
+function M.edit_tags(path, on_done)
   path = resolve_path(path)
   if not path then
     vim.notify("xattr: no readable file for current buffer", vim.log.levels.WARN)
@@ -500,6 +538,9 @@ function M.edit_tags(path)
         string.format("xattr: set %d tag(s) on %s", #tags, vim.fn.fnamemodify(path, ":t")),
         vim.log.levels.INFO
       )
+      if on_done then
+        on_done(tags)
+      end
     else
       vim.notify("xattr: failed to write tags", vim.log.levels.ERROR)
     end
@@ -508,7 +549,8 @@ end
 
 -- Edit the comment for a path. Single-line input; for multi-line, user can
 -- embed \n literally (or extend later with a buffer editor).
-function M.edit_comment(path)
+-- Optional on_done(comment) runs after a successful write.
+function M.edit_comment(path, on_done)
   path = resolve_path(path)
   if not path then
     vim.notify("xattr: no readable file for current buffer", vim.log.levels.WARN)
@@ -524,6 +566,9 @@ function M.edit_comment(path)
     end
     if M.set_comment(path, input) then
       vim.notify("xattr: comment updated for " .. vim.fn.fnamemodify(path, ":t"), vim.log.levels.INFO)
+      if on_done then
+        on_done(input)
+      end
     else
       vim.notify("xattr: failed to write comment", vim.log.levels.ERROR)
     end
@@ -531,7 +576,8 @@ function M.edit_comment(path)
 end
 
 -- Edit the star rating for a path (0-5, 0 removes).
-function M.edit_rating(path)
+-- Optional on_done(n) runs after a successful write.
+function M.edit_rating(path, on_done)
   path = resolve_path(path)
   if not path then
     vim.notify("xattr: no readable file for current buffer", vim.log.levels.WARN)
@@ -555,6 +601,9 @@ function M.edit_rating(path)
         string.format("xattr: rating set to %s for %s", M.stars(n), vim.fn.fnamemodify(path, ":t")),
         vim.log.levels.INFO
       )
+      if on_done then
+        on_done(n)
+      end
     else
       vim.notify("xattr: failed to write rating", vim.log.levels.ERROR)
     end
@@ -669,7 +718,8 @@ local function build_nested_tag_rows(tags)
 end
 
 -- Picker: nested tags with counts; "(untagged)" pinned first.
--- <CR>: drill down to files for that tag / parent aggregate / untagged set.
+-- Entry point for <leader>fx / :XattrFind.
+-- <CR> closes this picker and opens pick_files for that tag or untagged set.
 function M.pick_tags(opts)
   opts = opts or {}
   local root = opts.root or vim.fn.getcwd()
@@ -736,10 +786,41 @@ function M.pick_tags(opts)
   }):find()
 end
 
--- Picker: list files (optionally pre-scoped). Shows each file's tags.
--- <CR>: open the file (works for any type - image plugin renders pdf/etc.).
--- <C-e>: edit tags for that file.
--- <C-c>: edit comment for that file.
+local function file_row(path, info)
+  info = info or {
+    tags = M.get_tags(path),
+    comment = M.get_comment(path),
+    rating = M.get_rating(path),
+  }
+  local rel = vim.fn.fnamemodify(path, ":~")
+  local tag_str = #info.tags > 0 and table.concat(info.tags, ", ") or "(none)"
+  local rating_str = info.rating > 0 and " " .. M.stars(info.rating) or ""
+  local display = string.format("%-50s  [%s]%s", rel, tag_str, rating_str)
+  return { path = path, display = display, info = info }
+end
+
+local function file_entry_maker(r)
+  return {
+    value = r.path,
+    display = r.display,
+    ordinal = r.display,
+    path = r.path,
+    filename = r.path,
+  }
+end
+
+-- Picker: list files (optionally pre-scoped). Shows each file's tags + preview.
+--
+-- opts:
+--   root              scan root when opts.paths is nil (default: cwd)
+--   paths             absolute paths to list (from pick_tags drill-down)
+--   title             prompt base title; "untagged" enables drop_when_tagged
+--   drop_when_tagged  if true, remove row after it gains tags (default: title
+--                     == "untagged")
+--
+-- Bindings (also shown in prompt_title; full table in file header):
+--   <CR> open | <C-t>/t/<C-e> tags | <A-c>/c comment | <A-r>/r rating
+-- Edits keep the picker open and refresh via telescope :refresh.
 function M.pick_files(opts)
   opts = opts or {}
   local root = opts.root or vim.fn.getcwd()
@@ -754,10 +835,14 @@ function M.pick_files(opts)
   local finders = require("telescope.finders")
   local conf = require("telescope.config").values
 
+  local drop_when_tagged = opts.drop_when_tagged
+  if drop_when_tagged == nil then
+    drop_when_tagged = opts.title == "untagged"
+  end
+
   local data
   local file_paths
   if opts.paths then
-    -- Pre-scoped (called from pick_tags drill-down).
     file_paths = opts.paths
   else
     data = M.collect(root)
@@ -778,70 +863,129 @@ function M.pick_files(opts)
     return
   end
 
-  -- Build display entries carrying the absolute path for actions.
   local results = {}
   for _, p in ipairs(file_paths) do
-    local info = (data and data.files[p]) or {
-      tags = M.get_tags(p),
-      comment = M.get_comment(p),
-      rating = M.get_rating(p),
+    local info = nil
+    if data then
+      info = data.files[p] or data.files[abs_path(p)]
+    end
+    results[#results + 1] = file_row(p, info)
+  end
+
+  local base_title = opts.title or ("xattr Files (" .. root .. ")")
+  local prompt_title = base_title .. "  <C-t> tag  <A-c> comment  <A-r> rating"
+
+  local function make_finder(rows)
+    return finders.new_table({
+      results = rows,
+      entry_maker = file_entry_maker,
+    })
+  end
+
+  local function refresh_picker(prompt_bufnr, rows)
+    local picker = action_state.get_current_picker(prompt_bufnr)
+    if not picker then
+      return
+    end
+    results = rows
+    picker:refresh(make_finder(rows), { reset_prompt = false })
+  end
+
+  local function selected_path()
+    local sel = action_state.get_selected_entry()
+    if not sel or not sel.path then
+      return nil
+    end
+    return sel.path
+  end
+
+  local function after_meta_edit(prompt_bufnr, path)
+    local tags = M.get_tags(path)
+    local info = {
+      tags = tags,
+      comment = M.get_comment(path),
+      rating = M.get_rating(path),
     }
-    local rel = vim.fn.fnamemodify(p, ":~")
-    local tag_str = #info.tags > 0 and table.concat(info.tags, ", ") or "(none)"
-    local rating_str = info.rating > 0 and " " .. M.stars(info.rating) or ""
-    local display = string.format("%-50s  [%s]%s", rel, tag_str, rating_str)
-    table.insert(results, { path = p, display = display, info = info })
+
+    local new_rows = {}
+    for _, row in ipairs(results) do
+      if row.path ~= path then
+        new_rows[#new_rows + 1] = row
+      elseif not (drop_when_tagged and #tags > 0) then
+        new_rows[#new_rows + 1] = file_row(path, info)
+      end
+    end
+
+    if #new_rows == 0 then
+      actions.close(prompt_bufnr)
+      vim.notify("xattr: no files left in " .. base_title, vim.log.levels.INFO)
+      return
+    end
+    refresh_picker(prompt_bufnr, new_rows)
+  end
+
+  local function map_both(map, lhs, fn)
+    map("i", lhs, fn)
+    map("n", lhs, fn)
   end
 
   pickers.new({}, {
-    prompt_title = opts.title or ("xattr Files (" .. root .. ")"),
-    finder = finders.new_table({
-      results = results,
-      entry_maker = function(r)
-        return {
-          value = r.path,
-          display = r.display,
-          ordinal = r.display,
-          path = r.path,
-          filename = r.path,
-        }
-      end,
-    }),
+    prompt_title = prompt_title,
+    finder = make_finder(results),
     sorter = conf.generic_sorter({}),
     previewer = conf.file_previewer({}),
     attach_mappings = function(prompt_bufnr, map)
       actions.select_default:replace(function()
-        local sel = action_state.get_selected_entry()
+        local path = selected_path()
         actions.close(prompt_bufnr)
-        if not sel or not sel.path then
+        if not path then
           return
         end
-        -- Open the file in a new buffer (works for pdf/epub/mp3/etc. when
-        -- snacks.image or a viewer plugin is available).
         vim.schedule(function()
-          vim.cmd("edit " .. vim.fn.fnameescape(sel.path))
+          vim.cmd("edit " .. vim.fn.fnameescape(path))
         end)
       end)
-      map("i", "<C-e>", function()
-        local sel = action_state.get_selected_entry()
-        if not sel or not sel.path then
+
+      local function edit_tags_inplace()
+        local path = selected_path()
+        if not path then
           return
         end
-        actions.close(prompt_bufnr)
-        vim.schedule(function()
-          M.edit_tags(sel.path)
+        M.edit_tags(path, function()
+          after_meta_edit(prompt_bufnr, path)
         end)
-      end)
-      map("i", "<C-c>", function()
-        local sel = action_state.get_selected_entry()
-        if not sel or not sel.path then
+      end
+
+      local function edit_comment_inplace()
+        local path = selected_path()
+        if not path then
           return
         end
-        actions.close(prompt_bufnr)
-        vim.schedule(function()
-          M.edit_comment(sel.path)
+        M.edit_comment(path, function()
+          after_meta_edit(prompt_bufnr, path)
         end)
-      end)
+      end
+
+      local function edit_rating_inplace()
+        local path = selected_path()
+        if not path then
+          return
+        end
+        M.edit_rating(path, function()
+          after_meta_edit(prompt_bufnr, path)
+        end)
+      end
+
+      map_both(map, "<C-t>", edit_tags_inplace)
+      map_both(map, "<C-e>", edit_tags_inplace)
+      map("n", "t", edit_tags_inplace)
+
+      map_both(map, "<A-c>", edit_comment_inplace)
+      map("n", "c", edit_comment_inplace)
+
+      map_both(map, "<A-r>", edit_rating_inplace)
+      map("n", "r", edit_rating_inplace)
+
       return true
     end,
   }):find()
