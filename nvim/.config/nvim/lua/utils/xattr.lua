@@ -428,18 +428,54 @@ end
 -- Display: floating window showing all xattr for current file                  --
 -- --------------------------------------------------------------------------- --
 
--- Resolve the path to operate on: explicit arg, or current buffer's file.
--- Returns nil and notifies the user if no usable path can be determined.
-local function resolve_path(path)
-  path = path or vim.api.nvim_buf_get_name(0)
-  if path == "" then
-    -- Try the buftype-specific file (e.g. some plugin buffers expose a name).
-    path = vim.fn.expand("%:p")
-  end
-  if path == "" or vim.fn.filereadable(path) ~= 1 then
+local function path_exists(path)
+  return path
+    and path ~= ""
+    and (vim.fn.filereadable(path) == 1 or vim.fn.isdirectory(path) == 1)
+end
+
+local function nvim_tree_path()
+  local ok, api = pcall(require, "nvim-tree.api")
+  if not ok then
     return nil
   end
-  return vim.fn.fnamemodify(path, ":p")
+  local node = api.tree.get_node_under_cursor()
+  if not node then
+    return nil
+  end
+  local p = node.absolute_path
+  if not p or p == "" then
+    return nil
+  end
+  return p
+end
+
+-- Resolve path: explicit arg, NvimTree node under cursor, or current buffer file.
+local function resolve_path(path)
+  if path and path ~= "" then
+    path = vim.fn.expand(path)
+    if path_exists(path) then
+      return vim.fn.fnamemodify(path, ":p")
+    end
+    return nil
+  end
+
+  if vim.bo.filetype == "NvimTree" then
+    local tree_path = nvim_tree_path()
+    if path_exists(tree_path) then
+      return vim.fn.fnamemodify(tree_path, ":p")
+    end
+    return nil
+  end
+
+  path = vim.api.nvim_buf_get_name(0)
+  if path == "" then
+    path = vim.fn.expand("%:p")
+  end
+  if path_exists(path) then
+    return vim.fn.fnamemodify(path, ":p")
+  end
+  return nil
 end
 
 -- Open a small centered floating window with the given lines.
