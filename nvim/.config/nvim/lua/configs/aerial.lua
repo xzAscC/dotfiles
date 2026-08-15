@@ -1,32 +1,30 @@
 ---@diagnostic disable: undefined-global
 
-local function is_latex_section_line(line)
-  return line:match "^%s*\\section%*?%s*[%[{]"
-    or line:match "^%s*\\subsection%*?%s*[%[{]"
-    or line:match "^%s*\\subsubsection%*?%s*[%[{]"
-end
-
 local function is_tex_filetype(filetype)
   return filetype == "tex" or filetype == "latex" or filetype == "plaintex"
 end
 
-local function keep_latex_section_symbol(bufnr, item)
-  local line = vim.api.nvim_buf_get_lines(bufnr, item.lnum - 1, item.lnum, false)[1]
-  return line and is_latex_section_line(line)
-end
+-- texlab tags every LaTeX sectioning level (\part, \chapter, \section,
+-- \subsection, \subsubsection, \paragraph, \subparagraph) with the single
+-- SymbolKind "Module". No non-section construct shares that kind (figures,
+-- tables, algorithms and listings are "Method"; equations are "Constant";
+-- itemize/enumerate are "Enum"). Selecting by kind avoids re-reading live
+-- buffer lines, which went stale whenever an edit shifted lines between LSP
+-- refreshes and dropped valid sections from the outline.
+local LATEX_SECTION_KIND = "Module"
 
-local function collect_latex_section_symbols(bufnr, items, output)
+local function collect_latex_section_symbols(items, output)
   for _, item in ipairs(items) do
     local children = item.children
 
-    if keep_latex_section_symbol(bufnr, item) then
+    if item.kind == LATEX_SECTION_KIND then
       item.children = nil
       item.parent = nil
       table.insert(output, item)
     end
 
     if children then
-      collect_latex_section_symbols(bufnr, children, output)
+      collect_latex_section_symbols(children, output)
     end
   end
 
@@ -91,7 +89,7 @@ return {
   post_add_all_symbols = function(bufnr, items)
     local filetype = vim.bo[bufnr].filetype
     if is_tex_filetype(filetype) then
-      return collect_latex_section_symbols(bufnr, items, {})
+      return collect_latex_section_symbols(items, {})
     end
 
     return filter_non_global_variables(items)
