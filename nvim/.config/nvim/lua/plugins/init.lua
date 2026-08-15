@@ -84,6 +84,18 @@ return {
   },
 
   {
+    "hrsh7th/nvim-cmp",
+    dependencies = { "hrsh7th/cmp-omni" },
+    config = function(_, opts)
+      local cmp = require "cmp"
+      cmp.setup(opts)
+      local sources = vim.deepcopy(opts.sources)
+      table.insert(sources, { name = "omni" })
+      cmp.setup.filetype({ "tex", "plaintex", "latex" }, { sources = sources })
+    end,
+  },
+
+  {
     "MeanderingProgrammer/render-markdown.nvim",
     ft = "markdown",
     opts = {
