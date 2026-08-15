@@ -37,8 +37,9 @@ map("n", "<leader>t[", "<cmd>NvimTreeResize -5<CR>", { desc = "Narrow file tree"
 --   zc  - collapse single directory
 --   zo  - expand single directory
 map("n", "<leader>lc", function()
-  vim.cmd "VimtexClean"
-  vim.cmd "VimtexCompile"
+  vim.cmd "VimtexStop"
+  vim.cmd "VimtexClean!"
+  vim.cmd "VimtexCompile -shell-escape"
 end, { desc = "Clean then compile LaTeX" })
 
 map("n", "<leader>gd", "<cmd>DiffviewOpen<CR>", { desc = "Open diff view" })
