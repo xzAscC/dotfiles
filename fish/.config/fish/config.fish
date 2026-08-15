@@ -31,3 +31,6 @@ if status is-interactive
         alias ssh 'kitten ssh'
     end
 end
+
+# Hermes Agent — ensure ~/.local/bin is on PATH
+fish_add_path "$HOME/.local/bin"
