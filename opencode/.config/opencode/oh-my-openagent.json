@@ -2,11 +2,14 @@
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/dev/assets/oh-my-opencode.schema.json",
   "agents": {
     "sisyphus": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "openai/gpt-5.6-sol",
       "variant": "medium",
       "fallback_models": [
         {
-          "model": "zai-coding-plan/glm-5.1"
+          "model": "xai/grok-4.6"
+        },
+        {
+          "model": "xai/grok-4.6"
         }
       ]
     },
@@ -15,28 +18,28 @@
       "variant": "medium"
     },
     "oracle": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "openai/gpt-5.6-sol",
       "variant": "high",
       "fallback_models": [
         {
-          "model": "openai/gpt-5.6-sol",
+          "model": "xai/grok-4.6",
           "variant": "high"
         }
       ]
     },
     "librarian": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "openai/gpt-5.6-luna",
       "fallback_models": [
         {
-          "model": "openai/gpt-5.4-nano"
+          "model": "xai/grok-4.6"
         }
       ]
     },
     "explore": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "openai/gpt-5.6-luna",
       "fallback_models": [
         {
-          "model": "openai/gpt-5.4-nano"
+          "model": "xai/grok-4.6"
         }
       ]
     },
@@ -45,38 +48,38 @@
       "variant": "medium",
       "fallback_models": [
         {
-          "model": "zai-coding-plan/glm-4.6v"
+          "model": "xai/grok-4.6"
         },
         {
-          "model": "openai/gpt-5-nano"
+          "model": "xai/grok-4.6"
         }
       ]
     },
     "prometheus": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "openai/gpt-5.6-luna",
       "variant": "high",
       "fallback_models": [
         {
-          "model": "google/gemini-3.1-pro-preview"
+          "model": "xai/grok-4.6"
         }
       ]
     },
     "metis": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "openai/gpt-5.6-luna",
       "variant": "high"
     },
     "momus": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "openai/gpt-5.6-luna",
       "variant": "xhigh",
       "fallback_models": [
         {
-          "model": "google/gemini-3.1-pro-preview",
+          "model": "xai/grok-4.6",
           "variant": "high"
         }
       ]
     },
     "atlas": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "openai/gpt-5.6-luna",
       "variant": "medium"
     },
     "sisyphus-junior": {
@@ -90,26 +93,26 @@
       "variant": "high",
       "fallback_models": [
         {
-          "model": "zai-coding-plan/glm-5.1"
+          "model": "xai/grok-4.6"
         }
       ]
     },
     "ultrabrain": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "openai/gpt-5.6-luna",
       "variant": "xhigh",
       "fallback_models": [
         {
-          "model": "google/gemini-3.1-pro-preview",
+          "model": "xai/grok-4.6",
           "variant": "high"
         }
       ]
     },
     "deep": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "openai/gpt-5.6-luna",
       "variant": "medium",
       "fallback_models": [
         {
-          "model": "google/gemini-3.1-pro-preview",
+          "model": "xai/grok-4.6",
           "variant": "high"
         }
       ]
@@ -119,33 +122,33 @@
       "variant": "high",
       "fallback_models": [
         {
-          "model": "openai/gpt-5.6-sol"
+          "model": "xai/grok-4.6"
         }
       ]
     },
     "quick": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "openai/gpt-5.6-luna",
       "fallback_models": [
         {
-          "model": "google/gemini-3-flash-preview"
+          "model": "xai/grok-4.6"
         }
       ]
     },
     "unspecified-low": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "openai/gpt-5.6-luna",
       "variant": "medium",
       "fallback_models": [
         {
-          "model": "google/gemini-3-flash-preview"
+          "model": "xai/grok-4.6"
         }
       ]
     },
     "unspecified-high": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "openai/gpt-5.6-luna",
       "variant": "medium",
       "fallback_models": [
         {
-          "model": "google/gemini-3-flash-preview"
+          "model": "xai/grok-4.6"
         }
       ]
     },
