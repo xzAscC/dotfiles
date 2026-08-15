@@ -6,7 +6,7 @@
 #   mode: clip (default) | prompt | stamp
 #
 # Routing:
-#   clip   (t)     — 划词 / selection quote → ~/JD/20 Anki/20.01 LANG/todo.md
+#   clip   (t)     — 划词 / selection quote → ~/JD/20 Anki/inbox.md  (staging; outside deck dir)
 #   prompt (T)     — comment / typed idea   → <book-dir>/note.md  (§ Comments & Bookmarks)
 #   stamp  (C-t)   — page bookmark          → <book-dir>/note.md  (§ Comments & Bookmarks)
 #
@@ -19,8 +19,8 @@ FILE="${1:?file path required}"
 PAGE="${2:?page required}"
 MODE="${3:-clip}"
 
-TODO_DIR="${ZATHURA_TODO_DIR:-$HOME/JD/20 Anki/20.01 LANG}"
-TODO_FILE="${ZATHURA_TODO_FILE:-$TODO_DIR/todo.md}"
+TODO_DIR="${ZATHURA_TODO_DIR:-$HOME/JD/20 Anki}"
+TODO_FILE="${ZATHURA_TODO_FILE:-$TODO_DIR/inbox.md}"
 
 BOOK_DIR="$(cd -- "$(dirname -- "$FILE")" && pwd)"
 NOTE_FILE="${ZATHURA_NOTE_FILE:-$BOOK_DIR/note.md}"
@@ -188,7 +188,7 @@ append_to_todo() {
   mkdir -p -- "$TODO_DIR"
   if [ ! -f "$TODO_FILE" ]; then
     {
-      echo "# Reading TODO"
+      echo "# Reading Inbox"
       echo
       echo "划词 inbox from Zathura (selection / quote only). Comments & bookmarks go to the book note.md."
       echo
@@ -247,7 +247,7 @@ write_entry "$ENTRY_FILE"
 case "$MODE" in
   clip)
     append_to_todo "$ENTRY_FILE"
-    notify "→ todo.md · [${KIND}] ${BASE} p.${PAGE}"
+    notify "→ inbox.md · [${KIND}] ${BASE} p.${PAGE}"
     ;;
   prompt|stamp)
     append_to_note_section "$ENTRY_FILE"
