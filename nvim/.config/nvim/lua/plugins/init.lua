@@ -197,12 +197,13 @@ return {
 
   {
     "dautroc/nvim-flashcard",
-    cmd = "Flashcard",
+    cmd = { "Flashcard", "FlashcardAdd" },
     keys = {
       { "<leader>fl", "<cmd>Flashcard learn<cr>", desc = "Flashcard learn" },
       { "<leader>fe", "<cmd>Flashcard edit<cr>", desc = "Flashcard edit" },
       { "<leader>fc", "<cmd>Flashcard create<cr>", desc = "Flashcard create" },
       { "<leader>fo", "<cmd>Flashcard overview<cr>", desc = "Flashcard overview" },
+      { "<leader>fA", "<cmd>FlashcardAdd<cr>", desc = "Flashcard add cards" },
     },
     opts = {
       decks_dir = vim.fn.expand "~/JD/20 Anki/20.01 LANG",
@@ -218,5 +219,9 @@ return {
       },
       window = { width = 0.5, height = 0.4, border = "rounded" },
     },
+    config = function(_, opts)
+      require("flashcard").setup(opts)
+      require("configs.flashcard_add").setup(opts)
+    end,
   },
 }

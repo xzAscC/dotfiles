@@ -85,7 +85,8 @@ Everything else comes from NvChad and the pinned `lazy-lock.json`.
 - `<leader>mP` toggles browser-based GitHub-style Markdown preview
 - `<leader>mv` plays media under cursor/selection (or video buffer) with `mpv --vo=kitty` in a Kitty window; also `:KittyMpv [path|url]`
 - `<leader>oc` / `:OpenCode [dir]` opens `opencode` inside a tmux session in a float terminal (`-A` attaches if the session already exists); `<leader>oC` / `:OpenCodeSp` horizontal, `:OpenCodeVsp` vertical
-- Flashcards (`nvim-flashcard`, no Anki app): `<leader>fl` learn, `<leader>fe` edit, `<leader>fc` create, `<leader>fo` overview; also `:Flashcard …`
+- Flashcards (`nvim-flashcard`, no Anki app): `<leader>fl` learn, `<leader>fe` edit, `<leader>fc` create, `<leader>fo` overview; also `:Flashcard …`. Use `<leader>fA` / `:FlashcardAdd` to add cards (`<leader>fa` remains NvChad find-all-files).
+- `:FlashcardAdd` first selects a formal deck or the parent-level `inbox.md` in Telescope. Deck mode accepts `front :: back`; inbox mode accepts a word or short phrase without `::`. Enter appends and opens a fresh prompt for batch entry; one Esc finishes.
 - LSP buffer-local maps on attach: `gd`, `gr`, `gD`, `gi`, `K`
 - Python, shell, and Lua files support structural folding for functions, classes, loops, and
   control blocks; use `zc`/`zo` to close/open a fold, or `zM`/`zR` to close/open all folds.
@@ -96,7 +97,8 @@ Everything else comes from NvChad and the pinned `lazy-lock.json`.
 - `vimtex` compiler is set to `latexmk`; quickfix auto-open is disabled.
 - NvimTree closes automatically if it is the last remaining window.
 - `<leader>mv` launches an external Kitty window running mpv (not an in-buffer player). Quit with `q` in mpv.
-- Flashcard decks are Markdown under `~/JD/20 Anki/20.01 LANG` (`---` between cards, `?` between front/back). Scheduling state is sibling `*.state.json`.
+- Flashcard decks are Markdown under `~/JD/20 Anki/20.01 LANG`. The `front :: back` shorthand is stored with `front`, a standalone `?`, then `back`; cards are separated by a standalone `---` with a blank line on each side. Scheduling state is sibling `*.state.json`.
+- FlashcardAdd inbox words are stored in `~/JD/20 Anki/inbox.md` as timestamped ``- **YYYY-MM-DD HH:MM** · `word` · text`` entries, each followed by a blank line.
 - Reading captures (Zathura → `scripts/zathura-todo`):
-  - `t` 划词 (selection) → `~/JD/20 Anki/20.01 LANG/todo.md`
+  - `t` 划词 (selection) → `~/JD/20 Anki/inbox.md` (staging inbox, outside the deck dir; promote entries into cards manually)
   - `T` comment / `<C-t>` bookmark → book folder `note.md` under `## Comments & Bookmarks` (created if missing)

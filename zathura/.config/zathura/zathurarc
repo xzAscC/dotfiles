@@ -6,7 +6,7 @@ set synctex true
 set synctex-editor-command "nvim --server /tmp/nvimtex.sock --remote +%l %f"
 
 # Reading captures via ~/.config/nvim/scripts/zathura-todo
-# t     = 划词: clipboard selection → ~/JD/20 Anki/20.01 LANG/todo.md
+# t     = 划词: clipboard selection → ~/JD/20 Anki/inbox.md (staging; promote to cards manually)
 # T     = comment/idea (rofi/zenity) → <book-dir>/note.md § Comments & Bookmarks
 # <C-t> = page bookmark              → <book-dir>/note.md § Comments & Bookmarks
 map t exec "/home/xzascc/.config/nvim/scripts/zathura-todo \"$FILE\" $PAGE clip"
