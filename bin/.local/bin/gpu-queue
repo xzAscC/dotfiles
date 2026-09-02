@@ -1,0 +1,160 @@
+#!/usr/bin/env bash
+# Machine-level shared GPU job queue. Project-agnostic: any folder can queue.
+# One job runs at a time, FIFO, gated on free GPU memory.
+#
+#   gpu-queue add <name> <command...>   enqueue a job (runs via bash -c, any cwd)
+#   gpu-queue list                      show queue state
+#   gpu-queue remove <name>             drop a pending job
+#   gpu-queue threshold [MiB]           get/set the free-memory gate (default 6000)
+#   gpu-queue start                     start the runner daemon
+#   gpu-queue stop [force]              drain after current job / kill runner+job now
+#   gpu-queue status                    runner alive? current job?
+set -uo pipefail
+
+SPOOL=/tmp/opencode/gpu-queue
+PENDING=$SPOOL/pending
+RUNNING=$SPOOL/running
+DONE=$SPOOL/done
+FAILED=$SPOOL/failed
+LOGS=$SPOOL/logs
+THRESH_FILE=$SPOOL/threshold_mib
+RUNNER_PID=$SPOOL/runner.pid
+STOP_FLAG=$SPOOL/stop-after-current
+
+mkdir -p "$PENDING" "$RUNNING" "$DONE" "$FAILED" "$LOGS"
+[ -f "$THRESH_FILE" ] || echo 6000 >"$THRESH_FILE"
+
+gpu_used() {
+  nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits | head -1
+}
+
+adopt_orphans() {
+  for jf in "$RUNNING"/*.job; do
+    [ -e "$jf" ] || continue
+    name=${jf#*_}
+    name=${name%.job}
+    pgid_file="$jf.pid"
+    if [ -f "$pgid_file" ] && kill -0 -"$(cat "$pgid_file")" 2>/dev/null; then
+      echo "[gpu-queue] adopting orphan $name (pgid $(cat "$pgid_file"))"
+      while kill -0 -"$(cat "$pgid_file")" 2>/dev/null; do
+        sleep 30
+      done
+      mv "$jf" "$DONE/"
+    else
+      echo "[gpu-queue] orphan $name not running -> failed"
+      mv "$jf" "$FAILED/"
+    fi
+    rm -f "$pgid_file"
+  done
+}
+
+runner_loop() {
+  echo $$ >"$RUNNER_PID"
+  trap 'rm -f "$RUNNER_PID"; exit 0' TERM INT
+  adopt_orphans
+  while true; do
+    if [ -f "$STOP_FLAG" ]; then
+      rm -f "$STOP_FLAG" "$RUNNER_PID"
+      exit 0
+    fi
+    job=$(ls "$PENDING" 2>/dev/null | sort | head -1)
+    if [ -z "$job" ]; then
+      sleep 30
+      continue
+    fi
+    while [ "$(gpu_used)" -ge "$(cat "$THRESH_FILE")" ]; do
+      sleep 600
+    done
+    mv "$PENDING/$job" "$RUNNING/$job"
+    name=${job#*_}
+    name=${name%.job}
+    setsid bash "$RUNNING/$job" >"$LOGS/$name.log" 2>&1 &
+    pgid=$!
+    echo "$pgid" >"$RUNNING/$job.pid"
+    if wait "$pgid"; then
+      mv "$RUNNING/$job" "$DONE/"
+    else
+      mv "$RUNNING/$job" "$FAILED/"
+    fi
+    rm -f "$RUNNING/$job.pid"
+  done
+}
+
+case "${1:-help}" in
+  add)
+    [ $# -ge 3 ] || { echo "usage: gpu-queue add <name> <command...>" >&2; exit 2; }
+    name=$2
+    shift 2
+    seq=$(date +%s%N)
+    {
+      echo "#!/usr/bin/env bash"
+      printf 'cd %q\n' "$PWD"
+      printf 'bash -c %q\n' "$*"
+    } >"$PENDING/${seq}_${name}.job"
+    echo "queued: $name (from $PWD)"
+    ;;
+  list)
+    echo "pending:"
+    ls "$PENDING" 2>/dev/null | sed 's/^/  /' || true
+    echo "running:"
+    ls "$RUNNING" 2>/dev/null | grep -v '\.pid$' | sed 's/^/  /' || true
+    echo "done:    $(ls "$DONE" 2>/dev/null | wc -l) job(s)"
+    echo "failed:  $(ls "$FAILED" 2>/dev/null | wc -l) job(s)"
+    ;;
+  remove)
+    [ $# -eq 2 ] || { echo "usage: gpu-queue remove <name>" >&2; exit 2; }
+    found=0
+    for f in "$PENDING"/*_"$2".job; do
+      [ -e "$f" ] || continue
+      rm "$f"
+      found=1
+    done
+    [ "$found" -eq 1 ] && echo "removed: $2" || { echo "no pending job named $2" >&2; exit 1; }
+    ;;
+  threshold)
+    if [ $# -eq 2 ]; then
+      echo "$2" >"$THRESH_FILE"
+    fi
+    echo "threshold: $(cat "$THRESH_FILE") MiB (gpu now: $(gpu_used) MiB)"
+    ;;
+  start)
+    if [ -f "$RUNNER_PID" ] && kill -0 "$(cat "$RUNNER_PID")" 2>/dev/null; then
+      echo "runner already running (pid $(cat "$RUNNER_PID"))"
+    else
+      setsid nohup "$0" __runner >>"$LOGS/runner.log" 2>&1 &
+      sleep 1
+      echo "runner started (pid $(cat "$RUNNER_PID" 2>/dev/null || echo '?'))"
+    fi
+    ;;
+  stop)
+    if [ -f "$RUNNER_PID" ] && kill -0 "$(cat "$RUNNER_PID")" 2>/dev/null; then
+      if [ "${2:-}" = "force" ]; then
+        for pf in "$RUNNING"/*.job.pid; do
+          [ -e "$pf" ] || continue
+          kill -TERM -"$(cat "$pf")" 2>/dev/null || true
+        done
+        kill "$(cat "$RUNNER_PID")" 2>/dev/null || true
+        echo "runner and current job killed"
+      else
+        touch "$STOP_FLAG"
+        echo "runner will stop after the current job finishes"
+      fi
+    else
+      echo "runner not running"
+    fi
+    ;;
+  status)
+    if [ -f "$RUNNER_PID" ] && kill -0 "$(cat "$RUNNER_PID")" 2>/dev/null; then
+      echo "runner: RUNNING (pid $(cat "$RUNNER_PID"))"
+      echo "gpu:    $(gpu_used) MiB used, gate at $(cat "$THRESH_FILE") MiB"
+    else
+      echo "runner: STOPPED"
+    fi
+    ;;
+  __runner)
+    runner_loop
+    ;;
+  *)
+    sed -n '2,10p' "$0"
+    ;;
+esac
