@@ -25,12 +25,12 @@ if status is-interactive
     alias pamcan pacman
     alias q 'qs -c ii'
     if test "$TERM" != "linux"
-        alias ls 'eza --icons'
+        alias ls 'eza --icons=auto'
     end
     if test "$TERM" = "xterm-kitty"
         alias ssh 'kitten ssh'
     end
 end
 
-# Hermes Agent — ensure ~/.local/bin is on PATH
-fish_add_path "$HOME/.local/bin"
+# Added by git-ai installer on Sat Sep 26 23:32:51 2026
+fish_add_path -g "/home/xzascc/.git-ai/bin"

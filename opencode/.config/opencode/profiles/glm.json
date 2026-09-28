@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/dev/assets/oh-my-opencode.schema.json",
   "agents": {
     "sisyphus": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "zai-coding-plan/glm-5.3",
       "variant": "medium",
       "fallback_models": [
         {
@@ -25,7 +25,7 @@
       ]
     },
     "librarian": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "zai-coding-plan/glm-5.3",
       "fallback_models": [
         {
           "model": "openai/gpt-5.4-nano"
@@ -33,7 +33,7 @@
       ]
     },
     "explore": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "zai-coding-plan/glm-5.3",
       "fallback_models": [
         {
           "model": "openai/gpt-5.4-nano"
@@ -53,7 +53,7 @@
       ]
     },
     "prometheus": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "zai-coding-plan/glm-5.3",
       "variant": "high",
       "fallback_models": [
         {
@@ -62,11 +62,11 @@
       ]
     },
     "metis": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "zai-coding-plan/glm-5.3",
       "variant": "high"
     },
     "momus": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "zai-coding-plan/glm-5.3",
       "variant": "xhigh",
       "fallback_models": [
         {
@@ -76,7 +76,7 @@
       ]
     },
     "atlas": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "zai-coding-plan/glm-5.3",
       "variant": "medium"
     },
     "sisyphus-junior": {
@@ -95,7 +95,7 @@
       ]
     },
     "ultrabrain": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "zai-coding-plan/glm-5.3",
       "variant": "xhigh",
       "fallback_models": [
         {
@@ -105,7 +105,7 @@
       ]
     },
     "deep": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "zai-coding-plan/glm-5.3",
       "variant": "medium",
       "fallback_models": [
         {
@@ -124,7 +124,7 @@
       ]
     },
     "quick": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "zai-coding-plan/glm-5.3",
       "fallback_models": [
         {
           "model": "google/gemini-3-flash-preview"
@@ -132,7 +132,7 @@
       ]
     },
     "unspecified-low": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "zai-coding-plan/glm-5.3",
       "variant": "medium",
       "fallback_models": [
         {
@@ -141,7 +141,7 @@
       ]
     },
     "unspecified-high": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "zai-coding-plan/glm-5.3",
       "variant": "medium",
       "fallback_models": [
         {

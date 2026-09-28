@@ -4,6 +4,7 @@
 # Local secrets
 **/.env
 **/.env.*
+opencode/.config/opencode/service.json
 
 # Package artifacts
 **/node_modules/
