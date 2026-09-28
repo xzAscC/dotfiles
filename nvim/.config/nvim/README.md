@@ -80,7 +80,7 @@ Everything else comes from NvChad and the pinned `lazy-lock.json`.
 - `jk` in insert mode exits to normal mode
 - `<Alt-h/j/k/l>` moves between Neovim windows, including terminal windows
 - `<C-n>` toggles NvimTree
-- `<leader>p` opens the compiled PDF for the current TeX buffer
+- `<leader>p` opens the compiled PDF for the current TeX buffer in Chrome (`google-chrome-stable`); any `.pdf` opened inside Neovim is also handed off to Chrome and the binary buffer is cleaned up
 - `<leader>mp` toggles in-editor Markdown rendering
 - `<leader>mP` toggles browser-based GitHub-style Markdown preview
 - `<leader>mv` plays media under cursor/selection (or video buffer) with `mpv --vo=kitty` in a Kitty window; also `:KittyMpv [path|url]`

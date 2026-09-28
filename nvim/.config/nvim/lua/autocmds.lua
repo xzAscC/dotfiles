@@ -315,6 +315,30 @@ vim.api.nvim_create_autocmd("BufEnter", {
   end,
 })
 
+-- 外部查看器接管后丢弃 nvim 里的二进制 buffer；
+-- 先把显示它的窗口切回上一个 buffer（或空 buffer），否则删除 buffer 会连窗口一起关掉，
+-- 导致只剩 NvimTree 占满屏幕，或触发 CloseNvimTreeOnLastWindow 直接退出 nvim
+local function discard_viewer_buffer(buf)
+  vim.schedule(function()
+    if not vim.api.nvim_buf_is_valid(buf) then
+      return
+    end
+
+    for _, win in ipairs(vim.fn.win_findbuf(buf)) do
+      vim.api.nvim_win_call(win, function()
+        local alt = vim.fn.bufnr "#"
+        if alt > 0 and alt ~= buf and vim.fn.buflisted(alt) == 1 then
+          vim.cmd.buffer(alt)
+        else
+          vim.cmd.enew()
+        end
+      end)
+    end
+
+    vim.api.nvim_buf_delete(buf, { force = true })
+  end)
+end
+
 -- 打开 epub 时直接 fork zathura 接管渲染，并清掉 nvim 里的二进制 buffer
 vim.api.nvim_create_autocmd("BufReadCmd", {
   group = vim.api.nvim_create_augroup("UserEpubZathura", { clear = true }),
@@ -326,10 +350,21 @@ vim.api.nvim_create_autocmd("BufReadCmd", {
     end
 
     vim.system({ "zathura", "--fork", args.file }, { detach = true })
-    vim.schedule(function()
-      if vim.api.nvim_buf_is_valid(args.buf) then
-        vim.api.nvim_buf_delete(args.buf, { force = true })
-      end
-    end)
+    discard_viewer_buffer(args.buf)
+  end,
+})
+
+-- 打开 pdf 时直接 fork Chrome 接管渲染，并清掉 nvim 里的二进制 buffer
+vim.api.nvim_create_autocmd("BufReadCmd", {
+  group = vim.api.nvim_create_augroup("UserPdfChrome", { clear = true }),
+  pattern = "*.pdf",
+  callback = function(args)
+    if vim.fn.executable "google-chrome-stable" ~= 1 then
+      vim.notify("google-chrome-stable 未安装，无法打开 PDF: " .. args.file, vim.log.levels.ERROR)
+      return
+    end
+
+    vim.system({ "google-chrome-stable", args.file }, { detach = true })
+    discard_viewer_buffer(args.buf)
   end,
 })

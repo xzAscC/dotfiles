@@ -203,12 +203,16 @@ map("n", "<leader>lp", function()
   else
     pdf_path = vim.fn.expand("%:p:r") .. ".pdf"
   end
-  if vim.fn.filereadable(pdf_path) == 1 then
-    vim.cmd("tabnew " .. vim.fn.fnameescape(pdf_path))
-  else
+  if vim.fn.filereadable(pdf_path) ~= 1 then
     vim.notify("PDF not found: " .. pdf_path, vim.log.levels.ERROR)
+    return
   end
-end, { desc = "Open PDF in tab" })
+  if vim.fn.executable "google-chrome-stable" ~= 1 then
+    vim.notify("google-chrome-stable not found, cannot open PDF: " .. pdf_path, vim.log.levels.ERROR)
+    return
+  end
+  vim.system({ "google-chrome-stable", pdf_path }, { detach = true })
+end, { desc = "Open PDF in Chrome" })
 
 vim.api.nvim_create_autocmd("LspAttach", {
   group = vim.api.nvim_create_augroup("UserLspKeymaps", { clear = true }),
