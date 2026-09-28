@@ -94,6 +94,3 @@ Everything else comes from NvChad and the pinned `lazy-lock.json`.
 - `vimtex` compiler is set to `latexmk`; quickfix auto-open is disabled.
 - NvimTree closes automatically if it is the last remaining window.
 - `<leader>mv` launches an external Kitty window running mpv (not an in-buffer player). Quit with `q` in mpv.
-- Reading captures (Zathura → `scripts/zathura-todo`):
-  - `t` 划词 (selection) → `~/JD/20 Anki/inbox.md` (staging inbox, outside the deck dir; promote entries into cards manually)
-  - `T` comment / `<C-t>` bookmark → book folder `note.md` under `## Comments & Bookmarks` (created if missing)
