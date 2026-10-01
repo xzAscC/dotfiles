@@ -1,0 +1,37 @@
+nvim/.config/nvim/.stylua.toml
+  s_4833ebacb5d016::t_65a42fcd8cdb38 1-6
+nvim/.config/nvim/init.lua
+  s_4833ebacb5d016::t_d9e2b90d62f6a0 61
+nvim/.config/nvim/lua/autocmds.lua
+  s_4833ebacb5d016::t_969ec15cfe2bcc 312
+nvim/.config/nvim/lua/chadrc.lua
+  s_4833ebacb5d016::t_f9417f4d802565 1,3,9,11-14
+nvim/.config/nvim/lua/configs/lspconfig.lua
+  s_4833ebacb5d016::t_5010b27ef05105 28
+nvim/.config/nvim/lua/mappings.lua
+  s_4833ebacb5d016::t_03304c7104415a 96-100,103,120-135,137-140,204
+nvim/.config/nvim/lua/plugins/init.lua
+  s_4833ebacb5d016::t_882b2f263becab 103,107
+nvim/.config/nvim/lua/utils/kitty_mpv.lua
+  s_4833ebacb5d016::t_3c4a3e30854ff4 37,45,52,58,105,110,171,175,180
+nvim/.config/nvim/lua/utils/opencode.lua
+  s_4833ebacb5d016::t_10d77352360ea0 38
+nvim/.config/nvim/lua/utils/xattr.lua
+  s_4833ebacb5d016::t_faadad0105bbca 92,99,115,124,219-234,320,342-343,351,362-363,378,384,386,428,467,761-764,786-815,817-818,864-867,891,908,911,961-976,979-986,989-996,999-1006,1009-1011,1013-1014,1016-1017,1019-1022
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5555f841d21f44be51f3bca7031f8e76e62a113e",
+  "prompts": {},
+  "sessions": {
+    "s_4833ebacb5d016": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e7c8ad27-d449-44fa-916c-fca36e3bc0f3",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "xzascc <xudongzhu3944@gmail.com>"
+    }
+  }
+}
