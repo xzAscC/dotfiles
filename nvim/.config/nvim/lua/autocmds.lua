@@ -22,6 +22,21 @@ local function apply_code_highlights()
   hl(0, "@lsp.type.function", { fg = "#7aa2f7", bold = true })
   hl(0, "@lsp.type.method", { fg = "#7dcfff" })
   hl(0, "@lsp.type.variable", { fg = "#cdd6f4" })
+
+  -- Markdown 标题：每级一种 catppuccin 色，背景为同色淡化条
+  local heading_colors = {
+    { fg = "#f38ba8", bg = "#3b2a35" }, -- H1 red
+    { fg = "#fab387", bg = "#3b3030" }, -- H2 peach
+    { fg = "#f9e2af", bg = "#38362f" }, -- H3 yellow
+    { fg = "#a6e3a1", bg = "#2a3830" }, -- H4 green
+    { fg = "#89b4fa", bg = "#283048" }, -- H5 blue
+    { fg = "#cba6f7", bg = "#332c45" }, -- H6 mauve
+  }
+  for i, c in ipairs(heading_colors) do
+    hl(0, "@markup.heading." .. i .. ".markdown", { fg = c.fg, bold = true })
+    hl(0, "RenderMarkdownH" .. i, { fg = c.fg, bold = true })
+    hl(0, "RenderMarkdownH" .. i .. "Bg", { fg = c.fg, bg = c.bg, bold = true })
+  end
 end
 
 apply_code_highlights()
