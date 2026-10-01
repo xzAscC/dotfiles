@@ -1,6 +1,6 @@
-local vim = rawget(_G, "vim")
 local nvlsp = require "nvchad.configs.lspconfig"
 
+-- 设置 capabilities/on_init（通过 vim.lsp.config "*"），注册 LspAttach 映射，并启用 lua_ls
 nvlsp.defaults()
 
 -- Detect project-local Python venv
@@ -13,31 +13,27 @@ local function get_python_path(workspace)
   workspace = workspace or vim.uv.cwd()
 
   -- 2. Check for .venv or venv in project root
-  local candidates = {
-    workspace .. "/.venv/bin/python",
-    workspace .. "/venv/bin/python",
-  }
-
-  for _, path in ipairs(candidates) do
+  for _, venv in ipairs { ".venv", "venv" } do
+    local path = workspace .. "/" .. venv .. "/bin/python"
     if vim.fn.executable(path) == 1 then
       return path
     end
   end
 
   -- 3. Fallback to system python
-  return vim.fn.exepath "python3" or "python3"
+  local system_python = vim.fn.exepath "python3"
+  return system_python ~= "" and system_python or "python3"
 end
 
 vim.lsp.config("pyright", {
-  on_attach = nvlsp.on_attach,
-  on_init = nvlsp.on_init,
-  capabilities = nvlsp.capabilities,
   before_init = function(_, config)
-    config.settings = config.settings or {}
-    config.settings.python = config.settings.python or {}
     config.settings.python.pythonPath = get_python_path(config.root_dir)
   end,
   settings = {
+    pyright = {
+      -- import 整理交给 ruff
+      disableOrganizeImports = true,
+    },
     python = {
       analysis = {
         autoSearchPaths = true,
@@ -48,12 +44,14 @@ vim.lsp.config("pyright", {
   },
 })
 
-vim.lsp.enable "pyright"
+vim.lsp.config("ruff", {
+  on_attach = function(client)
+    -- hover 交给 pyright，ruff 只负责 lint / code action
+    client.server_capabilities.hoverProvider = false
+  end,
+})
 
 vim.lsp.config("texlab", {
-  on_attach = nvlsp.on_attach,
-  on_init = nvlsp.on_init,
-  capabilities = nvlsp.capabilities,
   settings = {
     texlab = {
       build = {
@@ -70,13 +68,8 @@ vim.lsp.config("texlab", {
   },
 })
 
-vim.lsp.enable "texlab"
-
 vim.lsp.config("bashls", {
-  on_attach = nvlsp.on_attach,
-  on_init = nvlsp.on_init,
-  capabilities = nvlsp.capabilities,
   filetypes = { "sh", "bash" },
 })
 
-vim.lsp.enable "bashls"
+vim.lsp.enable { "pyright", "ruff", "texlab", "bashls", "marksman" }

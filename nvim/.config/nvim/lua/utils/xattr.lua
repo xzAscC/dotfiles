@@ -424,6 +424,7 @@ end
 -- Display: floating window showing all xattr for current file                  --
 -- --------------------------------------------------------------------------- --
 
+---@param path string?
 local function path_exists(path)
   return path and path ~= "" and (vim.fn.filereadable(path) == 1 or vim.fn.isdirectory(path) == 1)
 end
@@ -456,7 +457,7 @@ local function resolve_path(path)
 
   if vim.bo.filetype == "NvimTree" then
     local tree_path = nvim_tree_path()
-    if path_exists(tree_path) then
+    if tree_path and path_exists(tree_path) then
       return vim.fn.fnamemodify(tree_path, ":p")
     end
     return nil
@@ -486,8 +487,8 @@ local function float(lines, title)
 
   local buf = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-  vim.api.nvim_buf_set_option(buf, "modifiable", false)
-  vim.api.nvim_buf_set_option(buf, "filetype", "xattr")
+  vim.bo[buf].modifiable = false
+  vim.bo[buf].filetype = "xattr"
 
   local win = vim.api.nvim_open_win(buf, true, {
     relative = "editor",

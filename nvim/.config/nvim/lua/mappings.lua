@@ -24,7 +24,8 @@ map("t", "<A-l>", "<C-\\><C-n><C-w>l", { desc = "Move to right window" })
 --   1gt   - go to tab 1
 --   2gt   - go to tab 2
 --   :tabn / :tabp / :tabn 2
-map("n", "<C-a>", "<cmd>AerialToggle!<CR>", { desc = "Toggle code outline" })
+-- <C-a>/<C-x> 保留给原生数字自增/自减
+map("n", "<leader>a", "<cmd>AerialToggle!<CR>", { desc = "Toggle code outline" })
 -- NvimTree resizing
 map("n", "<leader>t]", "<cmd>NvimTreeResize +5<CR>", { desc = "Widen file tree" })
 map("n", "<leader>t[", "<cmd>NvimTreeResize -5<CR>", { desc = "Narrow file tree" })
@@ -214,17 +215,9 @@ map("n", "<leader>lp", function()
   vim.system({ "google-chrome-stable", pdf_path }, { detach = true })
 end, { desc = "Open PDF in Chrome" })
 
-vim.api.nvim_create_autocmd("LspAttach", {
-  group = vim.api.nvim_create_augroup("UserLspKeymaps", { clear = true }),
-  callback = function(args)
-    local opts = { buffer = args.buf, silent = true }
-
-    map("n", "gd", vim.lsp.buf.definition, opts)
-    map("n", "gr", vim.lsp.buf.references, opts)
-    map("n", "gD", vim.lsp.buf.declaration, opts)
-    map("n", "gi", vim.lsp.buf.implementation, opts)
-    map("n", "K", vim.lsp.buf.hover, opts)
-  end,
-})
+-- LSP 映射：gd/gD 来自 NvChad，其余用 Neovim 内置默认
+--   K    hover            grr  references       gri  implementation
+--   grn  rename           gra  code action      grt  type definition
+--   gO   document symbols <C-s> (insert) signature help
 
 -- map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>")

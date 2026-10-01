@@ -133,7 +133,8 @@ local function play_in_nvim_terminal(target)
   local buf = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_win_set_buf(0, buf)
   vim.bo[buf].bufhidden = "wipe"
-  vim.fn.termopen(mpv_argv(target), {
+  vim.fn.jobstart(mpv_argv(target), {
+    term = true,
     on_exit = function(_, code)
       vim.schedule(function()
         if vim.api.nvim_buf_is_valid(buf) then

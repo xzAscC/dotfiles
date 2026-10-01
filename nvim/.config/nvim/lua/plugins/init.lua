@@ -2,7 +2,7 @@ return {
   {
     "stevearc/conform.nvim",
     event = { "BufWritePre" },
-    ft = { "tex", "latex" },
+    cmd = { "ConformInfo" },
     opts = require "configs.conform",
   },
 
@@ -21,14 +21,36 @@ return {
 
   {
     "nvim-treesitter/nvim-treesitter",
+    build = ":TSUpdate",
     opts = function(_, opts)
-      opts.ensure_installed = opts.ensure_installed or {}
-      table.insert(opts.ensure_installed, "lua")
-      table.insert(opts.ensure_installed, "python")
-      table.insert(opts.ensure_installed, "bash")
-      table.insert(opts.ensure_installed, "html")
-      table.insert(opts.ensure_installed, "css")
-      table.insert(opts.ensure_installed, "javascript")
+      vim.list_extend(opts.ensure_installed, {
+        "bash",
+        "css",
+        "html",
+        "javascript",
+        "json",
+        "latex",
+        "markdown",
+        "markdown_inline",
+        "python",
+        "regex",
+        "toml",
+        "yaml",
+      })
+    end,
+    -- main 分支的 setup() 不再识别 ensure_installed，这里手动补装缺失的 parser
+    config = function(_, opts)
+      local ts = require "nvim-treesitter"
+      ts.setup()
+
+      local installed = require("nvim-treesitter.config").get_installed "parsers"
+      local missing = vim.tbl_filter(function(lang)
+        return not vim.tbl_contains(installed, lang)
+      end, opts.ensure_installed)
+
+      if #missing > 0 then
+        ts.install(missing)
+      end
     end,
   },
 
@@ -78,9 +100,9 @@ return {
   },
 
   {
+    -- vimtex 自己按 filetype 延迟加载，官方要求不要交给插件管理器 lazy-load
     "lervag/vimtex",
     lazy = false,
-    ft = { "tex", "latex" },
   },
 
   {
@@ -137,6 +159,43 @@ return {
         delete = "dm",
         delete_line = "dm-",
         delete_buf = "dm<space>",
+      },
+    },
+  },
+
+  {
+    "folke/flash.nvim",
+    event = "VeryLazy",
+    opts = {
+      modes = {
+        -- 保留原生 f/t/;/, 行为，只用 s/S 触发 flash
+        char = { enabled = false },
+      },
+    },
+    keys = {
+      {
+        "s",
+        mode = { "n", "x", "o" },
+        function()
+          require("flash").jump()
+        end,
+        desc = "Flash jump",
+      },
+      {
+        "S",
+        mode = { "n", "x", "o" },
+        function()
+          require("flash").treesitter()
+        end,
+        desc = "Flash treesitter select",
+      },
+      {
+        "r",
+        mode = "o",
+        function()
+          require("flash").remote()
+        end,
+        desc = "Flash remote",
       },
     },
   },

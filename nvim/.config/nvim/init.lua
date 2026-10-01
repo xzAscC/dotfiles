@@ -1,17 +1,11 @@
 ---@diagnostic disable: undefined-global
 vim.g.base46_cache = vim.fn.stdpath "data" .. "/base46/"
 vim.g.mapleader = " "
+-- <localleader>：必须在 lazy 加载前设置。Neovim 默认 nil 时会被展开成空串，octo 等插件注册的
+-- <localleader>X 会退化成裸 X 被其他映射截获。显式设成 \ 恢复预期行为。
+vim.g.maplocalleader = "\\"
 vim.g.vscode_snippets_exclude = { "tex", "plaintex" }
 vim.g.vscode_snippets_path = vim.fn.stdpath "config" .. "/snippets"
-
-vim.api.nvim_create_user_command("ClearMarks", function()
-  vim.cmd "delmarks!"
-  pcall(function()
-    vim.cmd "delmarks A-Z0-9"
-  end)
-  vim.cmd "wshada!"
-  vim.notify "Cleared local, global, and ShaDa marks"
-end, { desc = "Clear local/global marks and persist ShaDa" })
 
 local fish = vim.fn.exepath "fish"
 if fish ~= "" then
@@ -57,6 +51,3 @@ require "autocmds"
 vim.schedule(function()
   require "mappings"
 end)
-
--- nvim tree setting
-vim.keymap.set("n", "<C-n>", ":NvimTreeToggle<CR>", { noremap = true, silent = true })

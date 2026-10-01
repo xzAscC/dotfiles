@@ -3,11 +3,7 @@ require "nvchad.options"
 
 -- add yours here!
 
-vim.opt.termguicolors = true
-
--- <localleader>：Neovim 默认 nil 时会被展开成空串，octo 等插件注册的
--- <localleader>X 会退化成裸 X 被其他映射截获。显式设成 \ 恢复预期行为。
-vim.g.maplocalleader = "\\"
+vim.o.cursorlineopt = "both"
 
 vim.g.sh_fold_enabled = 7
 
@@ -60,7 +56,6 @@ if vim.fn.executable(nvim_python) == 1 then
 end
 
 -- local o = vim.o
--- o.cursorlineopt ='both' -- to enable cursorline!
 
 -- vimtex
 

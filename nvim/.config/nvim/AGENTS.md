@@ -49,14 +49,13 @@ This repo does not currently define a formal build/lint/test pipeline.
 
 ### 3.3 Lint / Format
 
-- No dedicated linter is configured in-repo.
-- Formatting is configured through Conform using `stylua` for Lua.
-- If `stylua` is installed locally, use:
-  - Entire repo: `stylua .`
-  - Single file: `stylua lua/mappings.lua`
-
-If lint tooling is added later (for example `luacheck` or `selene`),
-prefer project-level wrapper commands and document them here.
+- Formatting: `stylua` (installed via Mason, style in `.stylua.toml`).
+  Conform also runs it on save.
+  - Entire repo: `~/.local/share/nvim/mason/bin/stylua .`
+  - Check only: `~/.local/share/nvim/mason/bin/stylua --check .`
+- Lint / type check: `lua-language-server` CLI, configured by `.luarc.json`.
+  Must report "no problems found":
+  `VIMRUNTIME=$(nvim --clean --headless "+lua io.write(vim.env.VIMRUNTIME)" +qa) lua-language-server --check=. --checklevel=Hint --check_format=pretty`
 
 ### 3.4 Test
 

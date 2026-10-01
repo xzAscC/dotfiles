@@ -286,10 +286,22 @@ vim.api.nvim_create_autocmd("ColorScheme", {
   callback = apply_ansi_highlights,
 })
 
-vim.api.nvim_create_autocmd({ "FileType", "BufEnter", "TextChanged", "TextChangedI" }, {
-  group = vim.api.nvim_create_augroup("AnsiColorPreview", { clear = true }),
-  pattern = "*",
-  callback = render_ansi_previews,
+-- 只在 shell buffer 里挂文本变更监听，避免每个 buffer 每次按键都触发
+local ansi_preview_group = vim.api.nvim_create_augroup("AnsiColorPreview", { clear = true })
+
+vim.api.nvim_create_autocmd("FileType", {
+  group = ansi_preview_group,
+  pattern = { "sh", "bash", "zsh" },
+  callback = function(args)
+    render_ansi_previews(args)
+    -- FileType 可能对同一 buffer 重复触发（:e、:set ft=），先清掉旧的监听
+    vim.api.nvim_clear_autocmds { group = ansi_preview_group, buffer = args.buf }
+    vim.api.nvim_create_autocmd({ "BufEnter", "TextChanged", "TextChangedI" }, {
+      group = ansi_preview_group,
+      buffer = args.buf,
+      callback = render_ansi_previews,
+    })
+  end,
 })
 
 vim.api.nvim_create_autocmd("FileType", {
