@@ -15,3 +15,4 @@ opencode/.config/opencode/service.json
 # Local backup files
 **/*.bak
 **/*.bak.*
+**/*.bak[0-9]*
