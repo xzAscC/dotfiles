@@ -19,8 +19,10 @@ function ta --description 'Switch/attach to another tmux session (fzf picker, or
             return 1
         end
         set target (eval $list_cmd |
-            fzf --prompt 'tmux> ' --header 'enter: switch   ctrl-x: kill session' \
+            fzf --prompt 'tmux> ' --header 'enter: switch   ctrl-x: kill session   q/esc: quit' \
                 --preview 'tmux capture-pane -ep -t ={1}:' --preview-window right,60% \
+                --with-shell 'sh -c' \
+                --bind 'q:transform:[ -z {q} ] && echo abort || echo put' \
                 --bind "ctrl-x:execute-silent(tmux kill-session -t ={1})+reload($list_cmd)" |
             string split -f1 ' ')
         test -n "$target"; or return 1
