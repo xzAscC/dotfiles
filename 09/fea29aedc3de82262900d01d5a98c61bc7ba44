@@ -1,0 +1,33 @@
+fish/.config/fish/config.fish
+  s_4833ebacb5d016::t_ed9e1899478d94 7-11,17,21,24,27-64,67-71,74-105,107
+  s_4833ebacb5d016::t_358e46c27f8866 4-6
+  s_4833ebacb5d016::t_4dc7b1beaa3061 3
+.gitignore
+  s_4833ebacb5d016::t_9aa53dd270d3cc 18
+fish/.config/fish/functions/screenoff.fish
+  s_e03f9043082179::t_a0e9c699c71813 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "09fea29aedc3de82262900d01d5a98c61bc7ba44",
+  "prompts": {},
+  "sessions": {
+    "s_4833ebacb5d016": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e7c8ad27-d449-44fa-916c-fca36e3bc0f3",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "xzascc <xudongzhu3944@gmail.com>"
+    },
+    "s_e03f9043082179": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3c668103-6506-4d12-86b0-e9c4efa4c58d",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "xzascc <xudongzhu3944@gmail.com>"
+    }
+  }
+}
