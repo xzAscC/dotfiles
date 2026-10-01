@@ -1,0 +1,28 @@
+fish/.config/fish/functions/ta.fish
+  s_4833ebacb5d016::t_f445c5746cc231 30
+  s_4833ebacb5d016::t_9062af3fef129d 1-29,31-37
+tmux/.config/tmux/tmux.conf
+  s_4833ebacb5d016::t_fcab7f5928d340 94
+  s_4833ebacb5d016::t_e4e479ad011916 67-78
+  s_4833ebacb5d016::t_5d5f107125bf21 48-57,61-66,79-85
+  s_4833ebacb5d016::t_e58a277ef1a509 58-60
+  s_4833ebacb5d016::t_b801c0e87ceb25 95
+fish/.config/fish/config.fish
+  s_4833ebacb5d016::t_156c13d61da6e9 3-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6f73ce4f96cf70135a93722bb72878670a74a444",
+  "prompts": {},
+  "sessions": {
+    "s_4833ebacb5d016": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e7c8ad27-d449-44fa-916c-fca36e3bc0f3",
+        "model": "unknown"
+      },
+      "human_author": "xzascc <xudongzhu3944@gmail.com>"
+    }
+  }
+}
