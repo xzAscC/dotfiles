@@ -1,0 +1,21 @@
+README.md
+  s_4833ebacb5d016::t_423292018f82b1 3,11,24,32,38
+tmux/.config/tmux/tmux.conf
+  s_4833ebacb5d016::t_0066e7459d0690 1-65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "85617c19d524b8c1a7a059bdf85cf3a0fc789b45",
+  "prompts": {},
+  "sessions": {
+    "s_4833ebacb5d016": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e7c8ad27-d449-44fa-916c-fca36e3bc0f3",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "xzascc <xudongzhu3944@gmail.com>"
+    }
+  }
+}
