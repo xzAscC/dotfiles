@@ -1,6 +1,6 @@
 # dotfiles
 
-Centralized dotfiles for fish, kitty, Neovim, OpenCode, and Zathura managed with GNU Stow.
+Centralized dotfiles for fish, kitty, Neovim, OpenCode, tmux, and Zathura managed with GNU Stow.
 
 ## Layout
 
@@ -8,6 +8,7 @@ Centralized dotfiles for fish, kitty, Neovim, OpenCode, and Zathura managed with
 - `kitty/.config/kitty` (colors are included from the quickshell-generated theme)
 - `nvim/.config/nvim`
 - `opencode/.config/opencode`
+- `tmux/.config/tmux`
 - `zathura/.config/zathura`
 
 ## Requirements
@@ -20,7 +21,7 @@ Centralized dotfiles for fish, kitty, Neovim, OpenCode, and Zathura managed with
 ```bash
 git clone https://github.com/<your-username>/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-stow fish kitty nvim opencode zathura
+stow fish kitty nvim opencode tmux zathura
 ```
 
 ## Re-link on this machine
@@ -28,11 +29,11 @@ stow fish kitty nvim opencode zathura
 From `~/dotfiles` run:
 
 ```bash
-stow --restow fish kitty nvim opencode zathura
+stow --restow fish kitty nvim opencode tmux zathura
 ```
 
 ## Remove links
 
 ```bash
-stow --delete fish kitty nvim opencode zathura
+stow --delete fish kitty nvim opencode tmux zathura
 ```
