@@ -1,0 +1,25 @@
+README.md
+  s_4833ebacb5d016::t_efb2fc37c2aa97 3,8,23,31,37
+kitty/.config/kitty/kitty.conf
+  s_4833ebacb5d016::t_dee66cdcd802c8 1-70
+kitty/.config/kitty/scroll_mark.py
+  s_4833ebacb5d016::t_5067218d690a17 1-18
+kitty/.config/kitty/search.py
+  s_4833ebacb5d016::t_ce625d30b5101a 1-341
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1cb91b818aa368da6ac7c5593e777200a70390fa",
+  "prompts": {},
+  "sessions": {
+    "s_4833ebacb5d016": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e7c8ad27-d449-44fa-916c-fca36e3bc0f3",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "xzascc <xudongzhu3944@gmail.com>"
+    }
+  }
+}
