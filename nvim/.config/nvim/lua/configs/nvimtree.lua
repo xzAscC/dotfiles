@@ -14,14 +14,21 @@ return {
     sorter = "case_sensitive",
   },
   view = {
-    width = 30,
+    width = 34,
   },
   renderer = {
     group_empty = true,
+    root_folder_label = ":t",
+    highlight_git = "name",
+    indent_markers = {
+      enable = true,
+    },
   },
   filters = {
     dotfiles = false,
     git_ignored = false,
+    -- 噪音目录默认隐藏，按 U 切换显示
+    custom = { "^\\.git$", "^\\.omo$", "^\\.playwright-mcp$", "^\\.pytest_cache$", "^\\.ruff_cache$", "^__pycache__$" },
   },
   bookmarks = {
     persist = true,
