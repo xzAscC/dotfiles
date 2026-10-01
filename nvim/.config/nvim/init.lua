@@ -58,5 +58,5 @@ vim.schedule(function()
   require "mappings"
 end)
 
--- nvim tree setting 
+-- nvim tree setting
 vim.keymap.set("n", "<C-n>", ":NvimTreeToggle<CR>", { noremap = true, silent = true })

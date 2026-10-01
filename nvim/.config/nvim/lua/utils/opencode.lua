@@ -35,11 +35,7 @@ function M.cmd(cwd)
   end
 
   local name = session_name(cwd)
-  return string.format(
-    "tmux new-session -A -s %s -c %s -- opencode",
-    vim.fn.shellescape(name),
-    vim.fn.shellescape(cwd)
-  )
+  return string.format("tmux new-session -A -s %s -c %s -- opencode", vim.fn.shellescape(name), vim.fn.shellescape(cwd))
 end
 
 ---@param opts? { pos?: string, cwd?: string, id?: string }

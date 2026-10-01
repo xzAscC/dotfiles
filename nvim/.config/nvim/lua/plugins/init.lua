@@ -100,11 +100,11 @@ return {
     ft = "markdown",
     opts = {
       heading = {
-        icons = { '󰲡 ', '󰲣 ', '󰲥 ', '󰲧 ', '󰲩 ', '󰲫 ' },
+        icons = { "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " },
       },
       code = {
         sign = true,
-        width = 'block',
+        width = "block",
         right_pad = 1,
       },
     },

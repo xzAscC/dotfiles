@@ -89,14 +89,14 @@ function M.get(path, key)
   if not path or path == "" then
     return nil
   end
-  local out, ok = run_string({
+  local out, ok = run_string {
     "getfattr",
     "-n",
     key,
     "--only-values",
     "--absolute-names",
     path,
-  })
+  }
   if not ok then
     return nil
   end
@@ -112,7 +112,7 @@ function M.set(path, key, value)
   if value == nil or value == "" then
     return M.remove(path, key)
   end
-  run_list({ "setfattr", "-n", key, "-v", tostring(value), path })
+  run_list { "setfattr", "-n", key, "-v", tostring(value), path }
   return vim.v.shell_error == 0
 end
 
@@ -121,7 +121,7 @@ function M.remove(path, key)
   if not path or path == "" then
     return false
   end
-  run_list({ "setfattr", "-x", key, path })
+  run_list { "setfattr", "-x", key, path }
   -- setfattr -x exits non-zero if the attribute is absent; treat as success.
   return true
 end
@@ -216,20 +216,22 @@ local function unescape_value(s)
     return ""
   end
   -- Strip surrounding quotes if present.
-  s = s:gsub("^%s*\"(.-)\"%s*$", "%1")
-  return (s:gsub("\\(%d%d%d)", function(o)
-    return string.char(tonumber(o, 8) or 0)
-  end):gsub('\\(.)', function(c)
-    if c == "n" then
-      return "\n"
-    elseif c == "t" then
-      return "\t"
-    elseif c == "r" then
-      return "\r"
-    else
-      return c -- covers \" \\ \' and any others -> literal char
-    end
-  end))
+  s = s:gsub('^%s*"(.-)"%s*$', "%1")
+  return (
+    s:gsub("\\(%d%d%d)", function(o)
+      return string.char(tonumber(o, 8) or 0)
+    end):gsub("\\(.)", function(c)
+      if c == "n" then
+        return "\n"
+      elseif c == "t" then
+        return "\t"
+      elseif c == "r" then
+        return "\r"
+      else
+        return c -- covers \" \\ \' and any others -> literal char
+      end
+    end)
+  )
 end
 
 -- Parse `getfattr -R -d` dump output into a structured table.
@@ -315,10 +317,7 @@ function M.collect(root, opts)
   table.insert(argv, root)
   local out, ok = run_list(argv)
   if not ok and #out == 0 then
-    vim.notify(
-      string.format("xattr: getfattr failed on %s", root),
-      vim.log.levels.WARN
-    )
+    vim.notify(string.format("xattr: getfattr failed on %s", root), vim.log.levels.WARN)
     return { files = {}, tags = {} }
   end
   return parse_dump(out, opts)
@@ -340,8 +339,8 @@ function M.list_files(root)
 
   local paths = {}
 
-  if vim.fn.executable("fd") == 1 then
-    local out, ok = run_list({
+  if vim.fn.executable "fd" == 1 then
+    local out, ok = run_list {
       "fd",
       "--type",
       "f",
@@ -349,7 +348,7 @@ function M.list_files(root)
       "--base-directory",
       root,
       ".",
-    })
+    }
     if ok then
       for _, p in ipairs(out) do
         if p ~= "" then
@@ -360,8 +359,8 @@ function M.list_files(root)
     end
   end
 
-  if vim.fn.executable("rg") == 1 then
-    local out, ok = run_list({ "rg", "--files", "--", root })
+  if vim.fn.executable "rg" == 1 then
+    local out, ok = run_list { "rg", "--files", "--", root }
     if ok then
       for _, p in ipairs(out) do
         if p ~= "" then
@@ -376,18 +375,15 @@ function M.list_files(root)
     end
   end
 
-  local out, ok = run_list({
+  local out, ok = run_list {
     "find",
     root,
     "-type",
     "f",
     "-print",
-  })
+  }
   if ok then
-    vim.notify(
-      "xattr: fd/rg unavailable; untagged scan ignores .gitignore",
-      vim.log.levels.WARN
-    )
+    vim.notify("xattr: fd/rg unavailable; untagged scan ignores .gitignore", vim.log.levels.WARN)
     for _, p in ipairs(out) do
       if p ~= "" then
         paths[#paths + 1] = abs_path(p)
@@ -429,9 +425,7 @@ end
 -- --------------------------------------------------------------------------- --
 
 local function path_exists(path)
-  return path
-    and path ~= ""
-    and (vim.fn.filereadable(path) == 1 or vim.fn.isdirectory(path) == 1)
+  return path and path ~= "" and (vim.fn.filereadable(path) == 1 or vim.fn.isdirectory(path) == 1)
 end
 
 local function nvim_tree_path()
@@ -470,7 +464,7 @@ local function resolve_path(path)
 
   path = vim.api.nvim_buf_get_name(0)
   if path == "" then
-    path = vim.fn.expand("%:p")
+    path = vim.fn.expand "%:p"
   end
   if path_exists(path) then
     return vim.fn.fnamemodify(path, ":p")
@@ -764,10 +758,10 @@ function M.pick_tags(opts)
     vim.notify("xattr: telescope.nvim not installed", vim.log.levels.ERROR)
     return
   end
-  local actions = require("telescope.actions")
-  local action_state = require("telescope.actions.state")
-  local pickers = require("telescope.pickers")
-  local finders = require("telescope.finders")
+  local actions = require "telescope.actions"
+  local action_state = require "telescope.actions.state"
+  local pickers = require "telescope.pickers"
+  local finders = require "telescope.finders"
   local conf = require("telescope.config").values
 
   vim.notify("xattr: scanning " .. root .. " ...", vim.log.levels.INFO)
@@ -789,37 +783,39 @@ function M.pick_tags(opts)
     return
   end
 
-  pickers.new({}, {
-    prompt_title = "xattr Tags (" .. root .. ")",
-    finder = finders.new_table({
-      results = tag_list,
-      entry_maker = function(e)
-        local left = string.rep("  ", e.depth or 0) .. (e.label or e.tag)
-        return {
-          value = e,
-          display = string.format("%-32s %3d files", left, e.count),
-          ordinal = (e.tag or "") .. " " .. tostring(e.count),
-          tag = e.tag,
-          paths = e.paths,
-          untagged = e.untagged,
-        }
+  pickers
+    .new({}, {
+      prompt_title = "xattr Tags (" .. root .. ")",
+      finder = finders.new_table {
+        results = tag_list,
+        entry_maker = function(e)
+          local left = string.rep("  ", e.depth or 0) .. (e.label or e.tag)
+          return {
+            value = e,
+            display = string.format("%-32s %3d files", left, e.count),
+            ordinal = (e.tag or "") .. " " .. tostring(e.count),
+            tag = e.tag,
+            paths = e.paths,
+            untagged = e.untagged,
+          }
+        end,
+      },
+      sorter = conf.generic_sorter {},
+      attach_mappings = function(prompt_bufnr, _)
+        actions.select_default:replace(function()
+          local sel = action_state.get_selected_entry()
+          actions.close(prompt_bufnr)
+          if not sel or not sel.value then
+            return
+          end
+          local entry = sel.value
+          local title = entry.untagged and "untagged" or ("tag: " .. entry.tag)
+          M.pick_files { paths = entry.paths, title = title }
+        end)
+        return true
       end,
-    }),
-    sorter = conf.generic_sorter({}),
-    attach_mappings = function(prompt_bufnr, _)
-      actions.select_default:replace(function()
-        local sel = action_state.get_selected_entry()
-        actions.close(prompt_bufnr)
-        if not sel or not sel.value then
-          return
-        end
-        local entry = sel.value
-        local title = entry.untagged and "untagged" or ("tag: " .. entry.tag)
-        M.pick_files({ paths = entry.paths, title = title })
-      end)
-      return true
-    end,
-  }):find()
+    })
+    :find()
 end
 
 local function file_row(path, info)
@@ -865,10 +861,10 @@ function M.pick_files(opts)
     vim.notify("xattr: telescope.nvim not installed", vim.log.levels.ERROR)
     return
   end
-  local actions = require("telescope.actions")
-  local action_state = require("telescope.actions.state")
-  local pickers = require("telescope.pickers")
-  local finders = require("telescope.finders")
+  local actions = require "telescope.actions"
+  local action_state = require "telescope.actions.state"
+  local pickers = require "telescope.pickers"
+  local finders = require "telescope.finders"
   local conf = require("telescope.config").values
 
   local drop_when_tagged = opts.drop_when_tagged
@@ -892,10 +888,7 @@ function M.pick_files(opts)
   table.sort(file_paths)
 
   if #file_paths == 0 then
-    vim.notify(
-      opts.title and ("xattr: no files for " .. opts.title) or "xattr: no files found",
-      vim.log.levels.WARN
-    )
+    vim.notify(opts.title and ("xattr: no files for " .. opts.title) or "xattr: no files found", vim.log.levels.WARN)
     return
   end
 
@@ -912,10 +905,10 @@ function M.pick_files(opts)
   local prompt_title = base_title .. "  <C-t> tag  <A-c> comment  <A-r> rating"
 
   local function make_finder(rows)
-    return finders.new_table({
+    return finders.new_table {
       results = rows,
       entry_maker = file_entry_maker,
-    })
+    }
   end
 
   local function refresh_picker(prompt_bufnr, rows)
@@ -965,66 +958,68 @@ function M.pick_files(opts)
     map("n", lhs, fn)
   end
 
-  pickers.new({}, {
-    prompt_title = prompt_title,
-    finder = make_finder(results),
-    sorter = conf.generic_sorter({}),
-    previewer = conf.file_previewer({}),
-    attach_mappings = function(prompt_bufnr, map)
-      actions.select_default:replace(function()
-        local path = selected_path()
-        actions.close(prompt_bufnr)
-        if not path then
-          return
-        end
-        vim.schedule(function()
-          vim.cmd("edit " .. vim.fn.fnameescape(path))
+  pickers
+    .new({}, {
+      prompt_title = prompt_title,
+      finder = make_finder(results),
+      sorter = conf.generic_sorter {},
+      previewer = conf.file_previewer {},
+      attach_mappings = function(prompt_bufnr, map)
+        actions.select_default:replace(function()
+          local path = selected_path()
+          actions.close(prompt_bufnr)
+          if not path then
+            return
+          end
+          vim.schedule(function()
+            vim.cmd("edit " .. vim.fn.fnameescape(path))
+          end)
         end)
-      end)
 
-      local function edit_tags_inplace()
-        local path = selected_path()
-        if not path then
-          return
+        local function edit_tags_inplace()
+          local path = selected_path()
+          if not path then
+            return
+          end
+          M.edit_tags(path, function()
+            after_meta_edit(prompt_bufnr, path)
+          end)
         end
-        M.edit_tags(path, function()
-          after_meta_edit(prompt_bufnr, path)
-        end)
-      end
 
-      local function edit_comment_inplace()
-        local path = selected_path()
-        if not path then
-          return
+        local function edit_comment_inplace()
+          local path = selected_path()
+          if not path then
+            return
+          end
+          M.edit_comment(path, function()
+            after_meta_edit(prompt_bufnr, path)
+          end)
         end
-        M.edit_comment(path, function()
-          after_meta_edit(prompt_bufnr, path)
-        end)
-      end
 
-      local function edit_rating_inplace()
-        local path = selected_path()
-        if not path then
-          return
+        local function edit_rating_inplace()
+          local path = selected_path()
+          if not path then
+            return
+          end
+          M.edit_rating(path, function()
+            after_meta_edit(prompt_bufnr, path)
+          end)
         end
-        M.edit_rating(path, function()
-          after_meta_edit(prompt_bufnr, path)
-        end)
-      end
 
-      map_both(map, "<C-t>", edit_tags_inplace)
-      map_both(map, "<C-e>", edit_tags_inplace)
-      map("n", "t", edit_tags_inplace)
+        map_both(map, "<C-t>", edit_tags_inplace)
+        map_both(map, "<C-e>", edit_tags_inplace)
+        map("n", "t", edit_tags_inplace)
 
-      map_both(map, "<A-c>", edit_comment_inplace)
-      map("n", "c", edit_comment_inplace)
+        map_both(map, "<A-c>", edit_comment_inplace)
+        map("n", "c", edit_comment_inplace)
 
-      map_both(map, "<A-r>", edit_rating_inplace)
-      map("n", "r", edit_rating_inplace)
+        map_both(map, "<A-r>", edit_rating_inplace)
+        map("n", "r", edit_rating_inplace)
 
-      return true
-    end,
-  }):find()
+        return true
+      end,
+    })
+    :find()
 end
 
 return M

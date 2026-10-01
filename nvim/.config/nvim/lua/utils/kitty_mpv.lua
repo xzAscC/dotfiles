@@ -34,7 +34,7 @@ local function is_video_path(path)
   if not path or path == "" then
     return false
   end
-  local ext = path:match("%.([%w]+)$")
+  local ext = path:match "%.([%w]+)$"
   return ext and VIDEO_EXT[ext:lower()] or false
 end
 
@@ -42,20 +42,20 @@ local function is_media_target(s)
   if not s or s == "" then
     return false
   end
-  if s:match("^https?://") then
+  if s:match "^https?://" then
     return true
   end
   return is_video_path(s)
 end
 
 local function expand_path(p)
-  if not p or p == "" or p:match("^https?://") then
+  if not p or p == "" or p:match "^https?://" then
     return p
   end
   if p:sub(1, 1) == "~" then
     p = vim.fn.expand(p)
   elseif p:sub(1, 1) ~= "/" then
-    local dir = vim.fn.expand("%:p:h")
+    local dir = vim.fn.expand "%:p:h"
     if dir ~= "" and dir ~= "." then
       p = dir .. "/" .. p
     else
@@ -102,12 +102,12 @@ function M.resolve_target(arg)
     return url_on_line
   end
 
-  local cfile = vim.fn.expand("<cfile>")
+  local cfile = vim.fn.expand "<cfile>"
   if cfile ~= "" and is_media_target(cfile) then
     return expand_path(cfile)
   end
 
-  local buf = vim.fn.expand("%:p")
+  local buf = vim.fn.expand "%:p"
   if is_video_path(buf) and vim.fn.filereadable(buf) == 1 then
     return buf
   end
@@ -168,19 +168,16 @@ function M.play(arg)
 
   local target = M.resolve_target(arg)
   if not target then
-    vim.notify(
-      "No video/URL found (cursor, selection, markdown link, or video buffer)",
-      vim.log.levels.WARN
-    )
+    vim.notify("No video/URL found (cursor, selection, markdown link, or video buffer)", vim.log.levels.WARN)
     return
   end
 
-  if not target:match("^https?://") and vim.fn.filereadable(target) ~= 1 then
+  if not target:match "^https?://" and vim.fn.filereadable(target) ~= 1 then
     vim.notify("File not found: " .. target, vim.log.levels.ERROR)
     return
   end
 
-  if target:match("^https?://") and not have "yt-dlp" then
+  if target:match "^https?://" and not have "yt-dlp" then
     vim.notify("yt-dlp not found; YouTube/stream URLs may fail", vim.log.levels.WARN)
   end
 

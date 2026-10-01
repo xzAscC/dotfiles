@@ -25,7 +25,7 @@ local function get_python_path(workspace)
   end
 
   -- 3. Fallback to system python
-  return vim.fn.exepath("python3") or "python3"
+  return vim.fn.exepath "python3" or "python3"
 end
 
 vim.lsp.config("pyright", {

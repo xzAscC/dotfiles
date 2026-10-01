@@ -309,7 +309,7 @@ vim.api.nvim_create_autocmd("BufEnter", {
       return
     end
 
-    if vim.fn.winnr("$") == 1 then
+    if vim.fn.winnr "$" == 1 then
       vim.cmd "quit"
     end
   end,

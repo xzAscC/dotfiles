@@ -93,16 +93,14 @@ end
 -- List all markdown tags in cwd as a telescope picker.
 -- Nested tags use '/' (e.g. #diary/daily). <CR> greps files containing the tag.
 map("n", "<leader>ft", function()
-  local actions = require("telescope.actions")
-  local action_state = require("telescope.actions.state")
-  local builtin = require("telescope.builtin")
-  local pickers = require("telescope.pickers")
-  local finders = require("telescope.finders")
+  local actions = require "telescope.actions"
+  local action_state = require "telescope.actions.state"
+  local builtin = require "telescope.builtin"
+  local pickers = require "telescope.pickers"
+  local finders = require "telescope.finders"
   local conf = require("telescope.config").values
 
-  local out = vim.fn.systemlist(
-    "rg -oN --no-filename -g '*.md' '#[A-Za-z][A-Za-z0-9_/-]*'"
-  )
+  local out = vim.fn.systemlist "rg -oN --no-filename -g '*.md' '#[A-Za-z][A-Za-z0-9_/-]*'"
   if vim.v.shell_error ~= 0 then
     vim.notify("No tags found (or rg failed).", vim.log.levels.WARN)
     return
@@ -119,25 +117,27 @@ map("n", "<leader>ft", function()
   end
   table.sort(tags)
 
-  pickers.new({}, {
-    prompt_title = "Tags (with counts)",
-    finder = finders.new_table({ results = tags }),
-    sorter = conf.generic_sorter({}),
-    attach_mappings = function(prompt_bufnr, _)
-      actions.select_default:replace(function()
-        local sel = action_state.get_selected_entry()
-        local tag = sel and sel[1]:match("^(%S+)")
-        actions.close(prompt_bufnr)
-        if not tag then
-          return
-        end
-        vim.schedule(function()
-          builtin.grep_string({ search = tag, additional_args = { "--glob=*.md" } })
+  pickers
+    .new({}, {
+      prompt_title = "Tags (with counts)",
+      finder = finders.new_table { results = tags },
+      sorter = conf.generic_sorter {},
+      attach_mappings = function(prompt_bufnr, _)
+        actions.select_default:replace(function()
+          local sel = action_state.get_selected_entry()
+          local tag = sel and sel[1]:match "^(%S+)"
+          actions.close(prompt_bufnr)
+          if not tag then
+            return
+          end
+          vim.schedule(function()
+            builtin.grep_string { search = tag, additional_args = { "--glob=*.md" } }
+          end)
         end)
-      end)
-      return true
-    end,
-  }):find()
+        return true
+      end,
+    })
+    :find()
 end, { desc = "List all markdown tags" })
 
 -- xattr tags/comment/rating: roundtrips with KDE Dolphin (user.xdg.* + Baloo).
@@ -201,7 +201,7 @@ map("n", "<leader>lp", function()
   if vim.b.vimtex and vim.b.vimtex.pdf then
     pdf_path = vim.b.vimtex.pdf
   else
-    pdf_path = vim.fn.expand("%:p:r") .. ".pdf"
+    pdf_path = vim.fn.expand "%:p:r" .. ".pdf"
   end
   if vim.fn.filereadable(pdf_path) ~= 1 then
     vim.notify("PDF not found: " .. pdf_path, vim.log.levels.ERROR)
