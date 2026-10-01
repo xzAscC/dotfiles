@@ -1,0 +1,19 @@
+fish/.config/fish/functions/ta.fish
+  s_4833ebacb5d016::t_b8166c6d48a9d6 14-17,21-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "57b621b35cc0e96cd64460d433c8acb97f596e84",
+  "prompts": {},
+  "sessions": {
+    "s_4833ebacb5d016": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e7c8ad27-d449-44fa-916c-fca36e3bc0f3",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "xzascc <xudongzhu3944@gmail.com>"
+    }
+  }
+}
