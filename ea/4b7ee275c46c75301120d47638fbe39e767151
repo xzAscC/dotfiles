@@ -1,0 +1,19 @@
+nvim/.config/nvim/lua/autocmds.lua
+  s_35a6ab286fbd2b::t_2ec5df183ce55d 25-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ea4b7ee275c46c75301120d47638fbe39e767151",
+  "prompts": {},
+  "sessions": {
+    "s_35a6ab286fbd2b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ef0db5b5-174e-4ef2-9cd3-007b97eb866f",
+        "model": "unknown"
+      },
+      "human_author": "xzascc <xudongzhu3944@gmail.com>"
+    }
+  }
+}
