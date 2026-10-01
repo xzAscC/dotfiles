@@ -1,0 +1,19 @@
+fish/.config/fish/functions/ta.fish
+  s_71cee7945db86c::t_cb7b628c46b50d 22,24-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "292c07fc8cd35bec7b4f580ee8caff3de135b990",
+  "prompts": {},
+  "sessions": {
+    "s_71cee7945db86c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "03684006-b3fe-47bb-8361-874c6be2a882",
+        "model": "unknown"
+      },
+      "human_author": "xzascc <xudongzhu3944@gmail.com>"
+    }
+  }
+}
