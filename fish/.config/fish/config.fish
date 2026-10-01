@@ -1,5 +1,23 @@
 # Commands to run in interactive sessions can go here
 if status is-interactive
+    # Every kitty window runs inside its own throwaway tmux session
+    # (destroy-unattached on: closing the window kills it, like a plain
+    # terminal). prefix d / prefix k pins a session to keep it; `ta` brings it
+    # back. Skipped inside tmux, nvim's :terminal, over ssh, and with NO_TMUX=1.
+    if test "$TERM" = xterm-kitty; and not set -q TMUX; and not set -q NVIM; and not set -q SSH_TTY; and not set -q NO_TMUX; and type -q tmux
+        set -l name 0
+        set -l taken (tmux list-sessions -F '#{session_name}' 2>/dev/null)
+        while contains -- $name $taken
+            set name (math $name + 1)
+        end
+        # Set the option in the same command as new-session: on a session that
+        # is not attached yet it would destroy it immediately. Not `exec`, so
+        # a failure (e.g. a name race) falls back to this plain fish.
+        tmux new-session -s $name \; set-option -t "=$name:" destroy-unattached on
+        and exit
+        echo "tmux failed to start; using plain fish" >&2
+    end
+
     # Greeting: fastfetch once per terminal window. SHLVL is unreliable here
     # (Hyprland launches kitty via a bash script), so use an exported guard
     # that nested fish shells inherit.
