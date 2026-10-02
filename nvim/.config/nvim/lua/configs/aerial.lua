@@ -31,6 +31,32 @@ local function collect_latex_section_symbols(items, output)
   return output
 end
 
+-- After \appendix texlab numbers sections with letters ("A Proofs", "B.1 Code")
+-- instead of digits. Retag those as "Namespace" (unused by texlab) so they get
+-- their own icon. Requiring a digit-numbered section elsewhere guards against
+-- unnumbered titles like "A Brief History" when no .aux file exists yet.
+local LATEX_APPENDIX_KIND = "Namespace"
+
+local function mark_latex_appendix_sections(items)
+  local numbered = false
+  for _, item in ipairs(items) do
+    if item.name:match "^%d" then
+      numbered = true
+      break
+    end
+  end
+
+  if numbered then
+    for _, item in ipairs(items) do
+      if item.name:match "^%u[%.%d]*%s" then
+        item.kind = LATEX_APPENDIX_KIND
+      end
+    end
+  end
+
+  return items
+end
+
 -- A "global" variable name: SCREAMING_SNAKE_CASE or a single uppercase letter.
 -- Matches MAX_SIZE, PI, X, _INTERNAL; rejects fooBar, my_var, Foo.
 local function is_global_var_name(name)
@@ -89,7 +115,7 @@ return {
   post_add_all_symbols = function(bufnr, items)
     local filetype = vim.bo[bufnr].filetype
     if is_tex_filetype(filetype) then
-      return collect_latex_section_symbols(items, {})
+      return mark_latex_appendix_sections(collect_latex_section_symbols(items, {}))
     end
 
     return filter_non_global_variables(items)
@@ -106,18 +132,21 @@ return {
     tex = {
       Module = "sec ",
       Method = "sec ",
+      Namespace = "app ",
       Collapsed = "▸ ",
     },
 
     latex = {
       Module = "sec ",
       Method = "sec ",
+      Namespace = "app ",
       Collapsed = "▸ ",
     },
 
     plaintex = {
       Module = "sec ",
       Method = "sec ",
+      Namespace = "app ",
       Collapsed = "▸ ",
     },
 
