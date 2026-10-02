@@ -1,0 +1,19 @@
+nvim/.config/nvim/lua/configs/aerial.lua
+  s_c9b82ce10e92b3::t_db0533e1ddfcfd 34-59,118,135,142,149
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "bc157657dd85e17db60377ee512f08ba0eb972a1",
+  "prompts": {},
+  "sessions": {
+    "s_c9b82ce10e92b3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "807dfdca-ed12-4fe2-99e9-863cdef7e7e6",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "xzascc <xudongzhu3944@gmail.com>"
+    }
+  }
+}
