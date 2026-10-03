@@ -17,6 +17,23 @@ M.base46 = {
     Comment = { italic = true },
     ["@comment"] = { italic = true },
   },
+
+  -- Markdown 任务状态 / 优先级徽章（plugins/init.lua 的 render-markdown + utils/md_task.lua）
+  hl_add = {
+    RenderMarkdownTaskDone = { fg = "green" },
+    RenderMarkdownTaskDoing = { fg = "blue", bold = true },
+    RenderMarkdownTaskReview = { fg = "yellow", bold = true },
+    RenderMarkdownTaskReviewText = { fg = "yellow", italic = true },
+    RenderMarkdownTaskWaiting = { fg = "orange", bold = true },
+    RenderMarkdownTaskDeferred = { fg = "purple" },
+    RenderMarkdownTaskDim = { fg = "light_grey" },
+    RenderMarkdownTaskCancelled = { fg = "light_grey" },
+    RenderMarkdownTaskCancelledText = { fg = "light_grey", strikethrough = true },
+    RenderMarkdownTaskPrio1 = { fg = "red", bg = "one_bg2", bold = true },
+    RenderMarkdownTaskPrio2 = { fg = "orange", bg = "one_bg2", bold = true },
+    RenderMarkdownTaskPrio3 = { fg = "nord_blue", bg = "one_bg2" },
+    RenderMarkdownTaskPrioDone = { fg = "light_grey", bg = "one_bg" },
+  },
 }
 
 M.ui = {

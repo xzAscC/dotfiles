@@ -48,6 +48,56 @@ map("n", "<leader>gD", "<cmd>DiffviewOpen main...HEAD<CR>", { desc = "Diff vs ma
 map("n", "<leader>gc", "<cmd>DiffviewClose<CR>", { desc = "Close diff view" })
 map("n", "<leader>gh", "<cmd>DiffviewFileHistory %<CR>", { desc = "File history" })
 map("n", "<leader>mp", "<cmd>RenderMarkdown toggle<CR>", { desc = "Toggle Markdown render" })
+-- 不退出 nvim 重载 chadrc 高亮 + render-markdown 配置
+map("n", "<leader>rc", function()
+  for _, m in ipairs { "chadrc", "nvconfig", "utils.md_task" } do
+    package.loaded[m] = nil
+  end
+  require("base46").load_all_highlights()
+  for _, spec in ipairs(dofile(vim.fn.stdpath "config" .. "/lua/plugins/init.lua")) do
+    if spec[1] == "MeanderingProgrammer/render-markdown.nvim" and package.loaded["render-markdown"] then
+      require("render-markdown").setup(spec.opts)
+    end
+  end
+  vim.notify "Config reloaded"
+end, { desc = "Reload highlights and markdown render" })
+-- Markdown 任务状态 / 优先级（规则见 lua/utils/md_task.lua 顶部）
+--   <leader>s + 状态字符   空格 待办  / 进行中  r 审核中  w 等待  > 推迟  x 完成  - 取消
+--   <leader>p1/2/3 + 1-9   设为 !12 这类细分优先级；第二键按回车 / 空格只定级别
+--   <leader>p0             清除优先级
+--   <leader>ps             整个文件的每个列表各自按优先级排序
+do
+  local function task()
+    return require "utils.md_task"
+  end
+  local states = {
+    [" "] = "todo",
+    ["/"] = "doing",
+    r = "review",
+    w = "waiting",
+    [">"] = "deferred",
+    x = "done",
+    ["-"] = "cancelled",
+  }
+  for ch, name in pairs(states) do
+    local lhs = ch == " " and "<leader>s<Space>" or "<leader>s" .. ch
+    map({ "n", "x" }, lhs, function()
+      task().set_status(ch)
+    end, { desc = "Task status: " .. name })
+  end
+  for level = 1, 3 do
+    map({ "n", "x" }, "<leader>p" .. level, function()
+      task().prompt_priority(level)
+    end, { desc = "Task priority " .. level .. " (then 1-9 / <CR>)" })
+  end
+  map({ "n", "x" }, "<leader>p0", function()
+    task().set_priority(nil)
+  end, { desc = "Task priority: clear" })
+  map("n", "<leader>ps", function()
+    task().sort()
+  end, { desc = "Task: sort every list by priority" })
+end
+
 map("n", "<leader>mP", "<cmd>MarkdownPreviewToggle<CR>", { desc = "Toggle GitHub Markdown preview" })
 
 do

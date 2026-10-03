@@ -129,6 +129,42 @@ return {
         width = "block",
         right_pad = 1,
       },
+      -- 任务状态 [ ] [/] [r] [w] [>] [x] [-]，颜色定义在 chadrc.lua 的 hl_add
+      -- 优先级 !1 / !12 徽章与快捷键见 utils/md_task.lua
+      checkbox = {
+        checked = { highlight = "RenderMarkdownTaskDone", scope_highlight = "@markup.strikethrough" },
+        custom = {
+          doing = { raw = "[/]", rendered = "󰡖 ", highlight = "RenderMarkdownTaskDoing" },
+          review = {
+            raw = "[r]",
+            rendered = "󰄗 ",
+            highlight = "RenderMarkdownTaskReview",
+            scope_highlight = "RenderMarkdownTaskReviewText",
+          },
+          waiting = { raw = "[w]", rendered = "󱋭 ", highlight = "RenderMarkdownTaskWaiting" },
+          deferred = {
+            raw = "[>]",
+            rendered = "󰛂 ",
+            highlight = "RenderMarkdownTaskDeferred",
+            scope_highlight = "RenderMarkdownTaskDim",
+          },
+          -- 覆盖插件默认的 todo，[-] 改为「取消」
+          todo = {
+            raw = "[-]",
+            rendered = "󰅘 ",
+            highlight = "RenderMarkdownTaskCancelled",
+            scope_highlight = "RenderMarkdownTaskCancelledText",
+          },
+        },
+      },
+      custom_handlers = {
+        markdown = {
+          extends = true,
+          parse = function(ctx)
+            return require("utils.md_task").parse(ctx)
+          end,
+        },
+      },
     },
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
@@ -161,6 +197,13 @@ return {
         delete_buf = "dm<space>",
       },
     },
+  },
+
+  {
+    -- NvChad 默认在首次按 <leader> 时才加载 which-key，那一次前缀会按 timeoutlen 超时，
+    -- 慢按 <leader>ps 会被拆成 空格 / p 粘贴 / s flash。启动后直接加载就没有这个问题
+    "folke/which-key.nvim",
+    event = "VeryLazy",
   },
 
   {
