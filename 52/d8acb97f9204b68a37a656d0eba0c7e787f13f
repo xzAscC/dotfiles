@@ -1,0 +1,25 @@
+nvim/.config/nvim/lua/chadrc.lua
+  s_6596314dd45d07::t_8fcd2626a33138 20-36
+nvim/.config/nvim/lua/mappings.lua
+  s_6596314dd45d07::t_a8c6bfa5b93b18 51-100
+nvim/.config/nvim/lua/plugins/init.lua
+  s_6596314dd45d07::t_f966a108d8af24 132-167,202-208
+nvim/.config/nvim/lua/utils/md_task.lua
+  s_6596314dd45d07::t_2501ef5d55c1a5 1-197
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "52d8acb97f9204b68a37a656d0eba0c7e787f13f",
+  "prompts": {},
+  "sessions": {
+    "s_6596314dd45d07": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06407ffc-ea34-40cd-8007-1ccb86a5542d",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "xzascc <xudongzhu3944@gmail.com>"
+    }
+  }
+}
